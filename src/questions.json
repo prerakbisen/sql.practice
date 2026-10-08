@@ -1,0 +1,2658 @@
+[
+  {
+    "id": 1,
+    "sourceNumber": 1,
+    "question": "Find the second highest salary from the Employee table.",
+    "solution": "SELECT MAX(salary) AS SecondHighestSalary FROM employees WHERE salary < ( SELECT MAX(salary) FROM employees );",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 2,
+    "sourceNumber": 2,
+    "question": "Find duplicate records in a table.",
+    "solution": "SELECT name, COUNT(*) FROM employees GROUP BY name HAVING COUNT(*) > 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 3,
+    "sourceNumber": 3,
+    "question": "Retrieve employees who earn more than their manager.",
+    "solution": "SELECT e.name AS Employee, e.salary, m.name AS Manager, m.salary AS ManagerSalary FROM employees e JOIN employees m ON e.manager_id = m.id WHERE e.salary > m.salary;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 4,
+    "sourceNumber": 4,
+    "question": "Count employees in each department having more than 5 employees.",
+    "solution": "SELECT department_id, COUNT(*) AS num_employees FROM employees GROUP BY department_id HAVING COUNT(*) > 5;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 5,
+    "sourceNumber": 5,
+    "question": "Find employees who joined in the last 6 months.",
+    "solution": "SELECT * FROM employees WHERE join_date >= CURRENT_DATE INTERVAL '6 months';",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 6,
+    "sourceNumber": 6,
+    "question": "Get departments with no employees.",
+    "solution": "SELECT d.department_name FROM departments d LEFT JOIN employees e ON d.department_id = e.department_id WHERE e.id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 7,
+    "sourceNumber": 7,
+    "question": "Write a query to find the median salary.",
+    "solution": "SELECT AVG(salary) AS median_salary FROM ( SELECT salary FROM employees ORDER BY salary LIMIT 2 - (SELECT COUNT(*) FROM employees) %2 OFFSET (SELECT (COUNT(*) - 1) / 2 FROM employees) ) AS median_subquery;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 8,
+    "sourceNumber": 8,
+    "question": "Running total of salaries by department.",
+    "solution": "SELECT name, department_id, salary, SUM(salary) OVER (PARTITION BY department_id ORDER BY id) AS running_total FROM employees;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 9,
+    "sourceNumber": 9,
+    "question": "Find the longest consecutive streak of daily logins for each user.",
+    "solution": "WITH login_dates AS ( SELECT user_id, login_date, login_date - INTERVAL ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY login_date) DAY AS grp FROM user_logins",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 10,
+    "sourceNumber": 10,
+    "question": "Recursive query to find the full reporting chain for each employee.",
+    "solution": "WITH RECURSIVE reporting_chain AS ( SELECT id, name, manager_id, 1 AS level FROM employees WHERE manager_id IS NULL UNION ALL SELECT e.id, e.name, e.manager_id, rc.level + 1 FROM employees e JOIN reporting_chain rc ON e.manager_id = rc.id ) SELECT * FROM reporting_chain ORDER BY level, id;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 11,
+    "sourceNumber": 11,
+    "question": "Write a query to find gaps in a sequence of numbers (missing IDs).",
+    "solution": "SELECT (id + 1) AS missing_id FROM employees e1 WHERE NOT EXISTS ( SELECT 1 FROM employees e2 WHERE e2.id = e1.id + 1 ) ORDER BY missing_id;",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 12,
+    "sourceNumber": 12,
+    "question": "Calculate cumulative distribution (CDF) of salaries.",
+    "solution": "SELECT name, salary, CUME_DIST() OVER (ORDER BY salary) AS salary_cdf FROM employees;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 13,
+    "sourceNumber": 13,
+    "question": "Compare two tables and find rows with differences in any column (all columns).",
+    "solution": "SELECT * FROM table1 t1 FULL OUTER JOIN table2 t2 ON t1.id = t2.id WHERE t1.col1 IS DISTINCT FROM t2.col1 OR t1.col2 IS DISTINCT FROM t2.col2 OR t1.col3 IS DISTINCT FROM t2.col3;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 14,
+    "sourceNumber": 14,
+    "question": "Write a query to rank employees based on salary with ties handled properly.",
+    "solution": "SELECT name, salary, RANK() OVER (ORDER BY salary DESC) AS salary_rank FROM employees;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 15,
+    "sourceNumber": 15,
+    "question": "Find customers who have not made any purchase.",
+    "solution": "SELECT c.customer_id, c.name FROM customers c LEFT JOIN sales s ON c.customer_id = s.customer_id WHERE s.sale_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 16,
+    "sourceNumber": 16,
+    "question": "Write a query to perform a conditional aggregation (count males and females in each department).",
+    "solution": "SELECT department_id, COUNT(CASE WHEN gender = 'M' THEN 1 END) AS male_count, COUNT(CASE WHEN gender = 'F' THEN 1 END) AS female_count FROM employees GROUP BY department_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 17,
+    "sourceNumber": 17,
+    "question": "Write a query to calculate the difference between current row and previous row's salary (lag function).",
+    "solution": "SELECT name, salary, salary - LAG(salary) OVER (ORDER BY id) AS salary_diff FROM employees;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 18,
+    "sourceNumber": 18,
+    "question": "Identify overlapping date ranges for bookings.",
+    "solution": "SELECT b1.booking_id, b2.booking_id FROM bookings b1 JOIN bookings b2 ON b1.booking_id <> b2.booking_id WHERE b1.start_date <= b2.end_date AND b1.end_date >= b2.start_date;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 19,
+    "sourceNumber": 19,
+    "question": "Write a query to find employees with salary greater than average salary in the entire company, ordered by salary descending.",
+    "solution": "SELECT name, salary FROM employees WHERE salary > (SELECT AVG(salary) FROM employees) ORDER BY salary DESC;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 20,
+    "sourceNumber": 20,
+    "question": "Aggregate JSON data (if supported) to list all employee names in a department as a JSON array.",
+    "solution": "SELECT department_id, JSON_AGG(name) AS employee_names FROM employees GROUP BY department_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 21,
+    "sourceNumber": 21,
+    "question": "Find employees who have the same salary as their manager.",
+    "solution": "SELECT e.name AS Employee, e.salary, m.name AS Manager FROM employees e JOIN employees m ON e.manager_id = m.id WHERE e.salary = m.salary;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 22,
+    "sourceNumber": 22,
+    "question": "Write a query to get the first and last purchase date for each customer.",
+    "solution": "SELECT customer_id, MIN(purchase_date) AS first_purchase, MAX(purchase_date) AS last_purchase FROM sales GROUP BY customer_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 23,
+    "sourceNumber": 23,
+    "question": "Find departments with the highest average salary.",
+    "solution": "WITH avg_salaries AS ( SELECT department_id, AVG(salary) AS avg_salary FROM employees GROUP BY department_id ) SELECT * FROM avg_salaries WHERE avg_salary = (SELECT MAX(avg_salary) FROM avg_salaries);",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 24,
+    "sourceNumber": 24,
+    "question": "Write a query to find the number of employees in each job title.",
+    "solution": "SELECT job_title, COUNT(*) AS num_employees FROM employees GROUP BY job_title;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 25,
+    "sourceNumber": 25,
+    "question": "Find employees who don't have a department assigned.",
+    "solution": "SELECT * FROM employees WHERE department_id IS NULL;",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 26,
+    "sourceNumber": 21,
+    "question": "Write a query to find the difference in days between two dates in the same table.",
+    "solution": "SELECT id, DATEDIFF(day, start_date, end_date) AS days_difference FROM projects; Note: DATEDIFF syntax varies - replace accordingly (e.g., DATEDIFF('day', start_date, end_date) in some systems).",
+    "category": "Date & Time",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 27,
+    "sourceNumber": 22,
+    "question": "Calculate the moving average of salaries over the last 3 employees ordered by hire date.",
+    "solution": "SELECT name, hire_date, salary, AVG(salary) OVER (ORDER BY hire_date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS moving_avg_salary FROM employees;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 28,
+    "sourceNumber": 23,
+    "question": "Find the most recent purchase per customer using window functions.",
+    "solution": "SELECT * FROM ( SELECT *, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY purchase_date DESC) AS rn FROM sales ) sub WHERE rn = 1;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 29,
+    "sourceNumber": 24,
+    "question": "Detect hierarchical depth of each employee in the org chart.",
+    "solution": "WITH RECURSIVE employee_depth AS ( SELECT id, name, manager_id, 1 AS depth FROM employees WHERE manager_id IS NULL UNION ALL SELECT e.id, e.name, e.manager_id, ed.depth + 1 FROM employees e JOIN employee_depth ed ON e.manager_id = ed.id ) SELECT * FROM employee_depth;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 30,
+    "sourceNumber": 25,
+    "question": "Write a query to perform a self-join to find pairs of employees in the same department.",
+    "solution": "SELECT e1.name AS Employee1, e2.name AS Employee2, e1.department_id FROM employees e1 JOIN employees e2 ON e1.department_id = e2.department_id AND e1.id < e2.id;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 31,
+    "sourceNumber": 26,
+    "question": "Write a query to pivot rows into columns dynamically (if dynamic pivot is not supported, simulate it for fixed values).",
+    "solution": "SELECT department_id, SUM(CASE WHEN job_title = 'Manager' THEN 1 ELSE 0 END) AS Managers, SUM(CASE WHEN job_title = 'Developer' THEN 1 ELSE 0 END) AS Developers, SUM(CASE WHEN job_title = 'Tester' THEN 1 ELSE 0 END) AS Testers FROM employees GROUP BY department_id;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 32,
+    "sourceNumber": 27,
+    "question": "Find customers who made purchases in every category available.",
+    "solution": "SELECT customer_id FROM sales s GROUP BY customer_id HAVING COUNT(DISTINCT category_id) = (SELECT COUNT(DISTINCT category_id) FROM sales);",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 33,
+    "sourceNumber": 28,
+    "question": "Identify employees who haven't received a salary raise in more than a year.",
+    "solution": "SELECT e.name FROM employees e JOIN salary_history sh ON e.id = sh.employee_id GROUP BY e.id, e.name HAVING MAX(sh.raise_date) < CURRENT_DATE INTERVAL '1 year';",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 34,
+    "sourceNumber": 29,
+    "question": "Write a query to rank salespeople by monthly sales, resetting the rank every month.",
+    "solution": "SELECT salesperson_id, sale_month, total_sales, RANK() OVER (PARTITION BY sale_month ORDER BY total_sales DESC) AS monthly_rank FROM ( SELECT salesperson_id, DATE_TRUNC('month', sale_date) AS sale_month, SUM(amount) AS total_sales FROM sales GROUP BY salesperson_id, sale_month ) AS monthly_sales;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 35,
+    "sourceNumber": 30,
+    "question": "Calculate the percentage change in sales compared to the previous month for each product.",
+    "solution": "SELECT product_id, sale_month, total_sales, (total_sales - LAG(total_sales) OVER (PARTITION BY product_id ORDER BY sale_month)) * 100.0 /",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 36,
+    "sourceNumber": 31,
+    "question": "Find employees who earn more than the average salary across the company but less than the highest salary in their department.",
+    "solution": "SELECT * FROM employees e WHERE salary > (SELECT AVG(salary) FROM employees) AND salary < ( SELECT MAX(salary) FROM employees WHERE department_id = e.department_id );",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 37,
+    "sourceNumber": 32,
+    "question": "Retrieve the last 5 orders for each customer.",
+    "solution": "SELECT * FROM ( SELECT o.*, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date DESC) AS rn FROM orders o ) sub WHERE rn <= 5;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 38,
+    "sourceNumber": 33,
+    "question": "Find employees with no salary changes in the last 2 years.",
+    "solution": "SELECT e.* FROM employees e LEFT JOIN salary_history sh ON e.id = sh.employee_id AND sh.change_date >= CURRENT_DATE - INTERVAL '2 years' WHERE sh.employee_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 39,
+    "sourceNumber": 34,
+    "question": "Find the department with the lowest average salary.",
+    "solution": "SELECT department_id, AVG(salary) AS avg_salary FROM employees GROUP BY department_id ORDER BY avg_salary LIMIT 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 40,
+    "sourceNumber": 35,
+    "question": "List employees whose names start and end with the same letter.",
+    "solution": "SELECT * FROM employees WHERE LEFT(name, 1) = RIGHT(name, 1); Questions",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 41,
+    "sourceNumber": 31,
+    "question": "Write a query to detect circular references in employee-manager hierarchy (cycles).",
+    "solution": "WITH RECURSIVE mgr_path (id, manager_id, path) AS ( SELECT id, manager_id, ARRAY[id] FROM employees WHERE manager_id IS NOT NULL UNION ALL SELECT e.id, e.manager_id, path || e.id FROM employees e JOIN mgr_path mp ON e.manager_id = mp.id WHERE NOT e.id = ANY(path) ) SELECT DISTINCT id FROM mgr_path WHERE id = ANY(path);",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 42,
+    "sourceNumber": 32,
+    "question": "Write a query to get the running total of sales per customer, ordered by sale date.",
+    "solution": "SELECT customer_id, sale_date, amount, SUM(amount) OVER (PARTITION BY customer_id ORDER BY sale_date) AS running_total FROM sales;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 43,
+    "sourceNumber": 33,
+    "question": "Find the department-wise salary percentile (e.g., 90th percentile) using window functions.",
+    "solution": "",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 44,
+    "sourceNumber": 34,
+    "question": "Find employees whose salary is a prime number.",
+    "solution": "WITH primes AS ( SELECT generate_series(2, (SELECT MAX(salary) FROM employees)) AS num EXCEPT SELECT num FROM ( SELECT num, UNNEST(ARRAY( SELECT generate_series(2, FLOOR(SQRT(num))) AS divisor )) AS divisor WHERE num % divisor = 0 ) AS composite ) SELECT * FROM employees WHERE salary IN (SELECT num FROM primes); Note: This is a conceptual approach-some databases may not support this syntax fully.",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 45,
+    "sourceNumber": 35,
+    "question": "Find employees who have worked for multiple departments over time.",
+    "solution": "SELECT employee_id FROM employee_department_history GROUP BY employee_id HAVING COUNT(DISTINCT department_id) > 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 46,
+    "sourceNumber": 36,
+    "question": "Use window function to find the difference between current row's sales and previous row's sales partitioned by product.",
+    "solution": "SELECT product_id, sale_date, amount, amount - LAG(amount) OVER (PARTITION BY product_id ORDER BY sale_date) AS sales_diff FROM sales;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 47,
+    "sourceNumber": 37,
+    "question": "Write a query to find all employees who are at the lowest level in the hierarchy (no subordinates).",
+    "solution": "SELECT * FROM employees e WHERE NOT EXISTS ( SELECT 1 FROM employees sub WHERE sub.manager_id = e.id );",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 48,
+    "sourceNumber": 38,
+    "question": "Find average order value per month and product category.",
+    "solution": "SELECT DATE_TRUNC('month', order_date) AS order_month, category_id, AVG(order_value) AS avg_order_value FROM orders GROUP BY order_month, category_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 49,
+    "sourceNumber": 39,
+    "question": "Write a query to create a running count of how many employees joined in each year.",
+    "solution": "SELECT join_year, COUNT(*) AS yearly_hires, SUM(COUNT(*)) OVER (ORDER BY join_year) AS running_total_hires FROM ( SELECT EXTRACT(YEAR FROM hire_date) AS join_year FROM employees ) sub GROUP BY join_year ORDER BY join_year;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 50,
+    "sourceNumber": 40,
+    "question": "Write a query to find the second most recent order date per customer.",
+    "solution": "SELECT customer_id, order_date FROM ( SELECT customer_id, order_date, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date DESC) AS rn FROM orders ) sub WHERE rn = 2;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 51,
+    "sourceNumber": 41,
+    "question": "Find employees who have never made a sale.",
+    "solution": "SELECT e.id, e.name FROM employees e LEFT JOIN sales s ON e.id = s.employee_id WHERE s.sale_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 52,
+    "sourceNumber": 42,
+    "question": "Find the average tenure of employees by department.",
+    "solution": "SELECT department_id, AVG(DATE_PART('year', CURRENT_DATE - hire_date)) AS avg_tenure_years FROM employees GROUP BY department_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 53,
+    "sourceNumber": 43,
+    "question": "Get employees with salary in the top 10% in their department.",
+    "solution": "SELECT * FROM ( SELECT e.*, NTILE(10) OVER (PARTITION BY department_id ORDER BY salary DESC) AS decile FROM employees e ) sub WHERE decile = 1;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 54,
+    "sourceNumber": 44,
+    "question": "Find customers who purchased more than once in the same day.",
+    "solution": "SELECT customer_id, purchase_date, COUNT(*) AS purchase_count FROM sales GROUP BY customer_id, purchase_date HAVING COUNT(*) > 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 55,
+    "sourceNumber": 45,
+    "question": "List all departments and their employee counts, including departments with zero employees.",
+    "solution": "SELECT d.department_id, d.department_name, COUNT(e.id) AS employee_count FROM departments d LEFT JOIN employees e ON d.department_id = e.department_id GROUP BY d.department_id, d.department_name;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 56,
+    "sourceNumber": 41,
+    "question": "Write a query to find duplicate rows based on multiple columns.",
+    "solution": "SELECT column1, column2, COUNT(*) FROM table_name GROUP BY column1, column2 HAVING COUNT(*) > 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 57,
+    "sourceNumber": 42,
+    "question": "Write a recursive query to calculate factorial of a number (e.g., 5).",
+    "solution": "WITH RECURSIVE factorial(n, fact) AS ( SELECT 1, 1 UNION ALL SELECT n + 1, fact * (n + 1) FROM factorial WHERE n < 5 ) SELECT fact FROM factorial WHERE n = 5;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 58,
+    "sourceNumber": 43,
+    "question": "Write a query to calculate the cumulative percentage of total sales per product.",
+    "solution": "SELECT product_id, sale_amount, SUM(sale_amount) OVER (ORDER BY sale_amount DESC) * 100.0 / SUM(sale_amount) OVER () AS cumulative_pct FROM sales;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 59,
+    "sourceNumber": 44,
+    "question": "Write a query to get employees who reported directly or indirectly to a given manager (hierarchy traversal).",
+    "solution": "WITH RECURSIVE reporting AS ( SELECT id, name, manager_id FROM employees WHERE manager_id = 101 -- replace 101 with manager's id UNION ALL SELECT e.id, e.name, e.manager_id FROM employees e INNER JOIN reporting r ON e.manager_id = r.id ) SELECT * FROM reporting;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 60,
+    "sourceNumber": 45,
+    "question": "Find the average number of orders per customer and standard deviation.",
+    "solution": "SELECT AVG(order_count) AS avg_orders, STDDEV(order_count) AS stddev_orders FROM ( SELECT customer_id, COUNT(*) AS order_count FROM orders GROUP BY customer_id ) sub;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 61,
+    "sourceNumber": 46,
+    "question": "Find gaps in date sequences for each customer (missing days).",
+    "solution": "WITH dates AS ( SELECT customer_id, purchase_date, LAG(purchase_date) OVER (PARTITION BY customer_id ORDER BY purchase_date) AS prev_date FROM sales ) SELECT customer_id, prev_date + INTERVAL '1 day' AS missing_date FROM dates WHERE purchase_date > prev_date + INTERVAL '1 day';",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 62,
+    "sourceNumber": 47,
+    "question": "Rank employees by salary within their department, and calculate percent rank.",
+    "solution": "SELECT name, department_id, salary, RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) AS salary_rank, PERCENT_RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) AS salary_percent_rank FROM employees;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 63,
+    "sourceNumber": 48,
+    "question": "Find products that have never been sold.",
+    "solution": "SELECT p.product_id, p.product_name FROM products p LEFT JOIN sales s ON p.product_id = s.product_id WHERE s.sale_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 64,
+    "sourceNumber": 49,
+    "question": "Write a query to find consecutive days where sales were above a threshold.",
+    "solution": "WITH flagged_sales AS ( SELECT sale_date, amount, CASE WHEN amount > 1000 THEN 1 ELSE 0 END AS flag FROM sales ), groups AS ( SELECT sale_date, amount, flag, sale_date - INTERVAL ROW_NUMBER() OVER (ORDER BY sale_date) DAY AS grp FROM flagged_sales WHERE flag = 1 ) SELECT MIN(sale_date) AS start_date, MAX(sale_date) AS end_date, COUNT(*) AS consecutive_days FROM groups GROUP BY grp ORDER BY consecutive_days DESC;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 65,
+    "sourceNumber": 50,
+    "question": "Write a query to concatenate employee names in each department (string aggregation).",
+    "solution": "SELECT department_id, STRING_AGG(name, ', ') AS employee_names FROM employees GROUP BY department_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 66,
+    "sourceNumber": 51,
+    "question": "Find employees whose salary is above the average salary of their department but below the company-wide average.",
+    "solution": "SELECT * FROM employees e WHERE salary > ( SELECT AVG(salary) FROM employees WHERE department_id = e.department_id ) AND salary < (SELECT AVG(salary) FROM employees);",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 67,
+    "sourceNumber": 52,
+    "question": "List the customers who purchased all products in a specific category.",
+    "solution": "SELECT customer_id FROM sales WHERE category_id = 10 -- example category GROUP BY customer_id HAVING COUNT(DISTINCT product_id) = ( SELECT COUNT(DISTINCT product_id) FROM products WHERE category_id = 10 );",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 68,
+    "sourceNumber": 53,
+    "question": "Retrieve the Nth highest salary from the employees table.",
+    "solution": "SELECT DISTINCT salary FROM employees ORDER BY salary DESC LIMIT 1 OFFSET N-1; (Replace N with the desired rank, e.g., N=3 for third highest)",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 69,
+    "sourceNumber": 54,
+    "question": "Find employees with no corresponding entries in the salary_history table.",
+    "solution": "SELECT e.* FROM employees e LEFT JOIN salary_history sh ON e.id = sh.employee_id WHERE sh.employee_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 70,
+    "sourceNumber": 55,
+    "question": "Show the department with the highest number of employees and the count.",
+    "solution": "SELECT department_id, COUNT(*) AS employee_count FROM employees GROUP BY department_id ORDER BY employee_count DESC LIMIT 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 71,
+    "sourceNumber": 51,
+    "question": "Write a recursive query to list all ancestors (managers) of a given employee.",
+    "solution": "WITH RECURSIVE ancestors AS ( SELECT id, name, manager_id FROM employees WHERE id = 123 -- given employee id UNION ALL SELECT e.id, e.name, e.manager_id FROM employees e JOIN ancestors a ON e.id = a.manager_id ) SELECT * FROM ancestors WHERE id != 123;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 72,
+    "sourceNumber": 52,
+    "question": "Calculate the median salary by department using window functions.",
+    "solution": "SELECT DISTINCT department_id, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) OVER (PARTITION BY department_id) AS median_salary FROM employees;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 73,
+    "sourceNumber": 53,
+    "question": "Write a query to find the first purchase date and last purchase date for each customer, including customers who never purchased anything.",
+    "solution": "SELECT c.customer_id, MIN(s.purchase_date) AS first_purchase, MAX(s.purchase_date) AS last_purchase FROM customers c LEFT JOIN sales s ON c.customer_id = s.customer_id GROUP BY c.customer_id;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 74,
+    "sourceNumber": 54,
+    "question": "Find the percentage difference between each month's total sales and the previous month's total sales.",
+    "solution": "WITH monthly_sales AS ( SELECT DATE_TRUNC('month', sale_date) AS month, SUM(amount) AS total_sales FROM sales GROUP BY month ) SELECT month, total_sales, (total_sales - LAG(total_sales) OVER (ORDER BY month)) * 100.0 / LAG(total_sales) OVER (ORDER BY month) AS pct_change FROM monthly_sales;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 75,
+    "sourceNumber": 55,
+    "question": "Write a query to find employees who have the longest tenure within their department.",
+    "solution": "WITH tenure AS ( SELECT *, RANK() OVER (PARTITION BY department_id ORDER BY hire_date ASC) AS tenure_rank FROM employees ) SELECT * FROM tenure WHERE tenure_rank = 1;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 76,
+    "sourceNumber": 56,
+    "question": "Generate a report that shows sales and sales growth percentage compared to the same month last year.",
+    "solution": "WITH monthly_sales AS ( SELECT DATE_TRUNC('month', sale_date) AS month, SUM(amount) AS total_sales FROM sales GROUP BY month ) SELECT ms1.month, ms1.total_sales, ((ms1.total_sales - ms2.total_sales) * 100.0 / ms2.total_sales) AS growth_pct FROM monthly_sales ms1 LEFT JOIN monthly_sales ms2 ON ms1.month = ms2.month + INTERVAL '1 year';",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 77,
+    "sourceNumber": 57,
+    "question": "Write a query to identify overlapping shifts for employees.",
+    "solution": "SELECT s1.employee_id, s1.shift_id AS shift1, s2.shift_id AS shift2 FROM shifts s1 JOIN shifts s2 ON s1.employee_id = s2.employee_id AND s1.shift_id <> s2.shift_id WHERE s1.start_time < s2.end_time AND s1.end_time > s2.start_time;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 78,
+    "sourceNumber": 58,
+    "question": "Calculate the total revenue for each customer, and rank them from highest to lowest spender.",
+    "solution": "SELECT customer_id, SUM(amount) AS total_revenue, RANK() OVER (ORDER BY SUM(amount) DESC) AS revenue_rank FROM sales GROUP BY customer_id;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 79,
+    "sourceNumber": 59,
+    "question": "Write a query to find the employee(s) who have never received a promotion.",
+    "solution": "SELECT e.* FROM employees e LEFT JOIN promotions p ON e.id = p.employee_id WHERE p.employee_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 80,
+    "sourceNumber": 60,
+    "question": "Write a query to find the top 3 products with the highest total sales amount each month.",
+    "solution": "WITH monthly_product_sales AS ( SELECT product_id, DATE_TRUNC('month', sale_date) AS month, SUM(amount) AS total_sales FROM sales GROUP BY product_id, month ), ranked_sales AS ( SELECT *, RANK() OVER (PARTITION BY month ORDER BY total_sales DESC) AS sales_rank FROM monthly_product_sales ) SELECT product_id, month, total_sales FROM ranked_sales WHERE sales_rank <= 3 ORDER BY month, sales_rank;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 81,
+    "sourceNumber": 61,
+    "question": "Find the customers who placed orders only in the last 30 days.",
+    "solution": "SELECT DISTINCT customer_id FROM orders WHERE order_date >= CURRENT_DATE INTERVAL '30 days' AND customer_id NOT IN ( SELECT DISTINCT customer_id FROM orders WHERE order_date < CURRENT_DATE INTERVAL '30 days' );",
+    "category": "Date & Time",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 82,
+    "sourceNumber": 62,
+    "question": "Find products that have never been ordered.",
+    "solution": "SELECT p.product_id, p.product_name FROM products p LEFT JOIN orders o ON p.product_id = o.product_id WHERE o.order_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 83,
+    "sourceNumber": 63,
+    "question": "Find employees whose salary is above their department's average but below the overall average salary.",
+    "solution": "SELECT * FROM employees e WHERE salary > (SELECT AVG(salary) FROM employees WHERE department_id = e.department_id) AND salary < (SELECT AVG(salary) FROM employees);",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 84,
+    "sourceNumber": 64,
+    "question": "Calculate the total sales amount and number of orders per customer in the last year.",
+    "solution": "SELECT customer_id, COUNT(*) AS total_orders, SUM(amount) AS total_sales FROM sales WHERE sale_date >= CURRENT_DATE INTERVAL '1 year' GROUP BY customer_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 85,
+    "sourceNumber": 65,
+    "question": "List the top 5 highest-paid employees per department.",
+    "solution": "SELECT * FROM ( SELECT e.*, ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary DESC) AS rn FROM employees e ) sub WHERE rn <= 5;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 86,
+    "sourceNumber": 61,
+    "question": "Write a query to identify \"gaps and islands\" in attendance records (consecutive dates present).",
+    "solution": "WITH attendance_groups AS ( SELECT employee_id, attendance_date, attendance_date - INTERVAL ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY attendance_date) DAY AS grp FROM attendance ) SELECT employee_id, MIN(attendance_date) AS start_date, MAX(attendance_date) AS end_date, COUNT(*) AS consecutive_days FROM attendance_groups GROUP BY employee_id, grp ORDER BY employee_id, start_date;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 87,
+    "sourceNumber": 62,
+    "question": "Write a recursive query to list all descendants of a manager in an organizational hierarchy.",
+    "solution": "WITH RECURSIVE descendants AS ( SELECT id, name, manager_id FROM employees WHERE manager_id = 100 -- starting manager id UNION ALL SELECT e.id, e.name, e.manager_id FROM employees e INNER JOIN descendants d ON e.manager_id = d.id ) SELECT * FROM descendants;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 88,
+    "sourceNumber": 63,
+    "question": "Calculate a 3-month moving average of monthly sales per product.",
+    "solution": "WITH monthly_sales AS ( SELECT product_id, DATE_TRUNC('month', sale_date) AS month, SUM(amount) AS total_sales FROM sales GROUP BY product_id, month ) SELECT product_id, month, total_sales, AVG(total_sales) OVER (PARTITION BY product_id ORDER BY month ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS moving_avg FROM monthly_sales;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 89,
+    "sourceNumber": 64,
+    "question": "Write a query to find employees who have the same hire date as their managers.",
+    "solution": "SELECT e.name AS employee_name, m.name AS manager_name, e.hire_date FROM employees e JOIN employees m ON e.manager_id = m.id WHERE e.hire_date = m.hire_date;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 90,
+    "sourceNumber": 65,
+    "question": "Write a query to find products with increasing sales over the last 3 months.",
+    "solution": "WITH monthly_sales AS ( SELECT product_id, DATE_TRUNC('month', sale_date) AS month, SUM(amount) AS total_sales FROM sales GROUP BY product_id, month ), ranked_sales AS ( SELECT product_id, month, total_sales, ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY month DESC) AS rn FROM monthly_sales ) SELECT ms1.product_id FROM ranked_sales ms1 JOIN ranked_sales ms2 ON ms1.product_id = ms2.product_id AND ms1.rn = 1 AND ms2.rn = 2 JOIN ranked_sales ms3 ON ms1.product_id = ms3.product_id AND ms3.rn = 3 WHERE ms3.total_sales < ms2.total_sales AND ms2.total_sales < ms1.total_sales;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 91,
+    "sourceNumber": 66,
+    "question": "Write a query to get the nth highest salary per department.",
+    "solution": "SELECT department_id, salary FROM ( SELECT department_id, salary, ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary DESC) AS rn FROM employees ) sub WHERE rn = N; (Replace N with the desired rank.)",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 92,
+    "sourceNumber": 67,
+    "question": "Find employees who have managed more than 3 projects.",
+    "solution": "SELECT manager_id, COUNT(DISTINCT project_id) AS project_count FROM projects GROUP BY manager_id HAVING COUNT(DISTINCT project_id) > 3; --68. Write a query to calculate the difference in days between each employee's hire date and their manager's hire date. SELECT e.name AS employee, m.name AS manager, DATEDIFF(day, m.hire_date, e.hire_date) AS days_difference FROM employees e JOIN employees m ON e.manager_id = m.id; (Syntax of DATEDIFF varies by SQL dialect)",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 93,
+    "sourceNumber": 69,
+    "question": "Write a query to find the department with the highest average years of experience.",
+    "solution": "SELECT department_id, AVG(EXTRACT(year FROM CURRENT_DATE - hire_date)) AS avg_experience_years FROM employees GROUP BY department_id ORDER BY avg_experience_years DESC LIMIT 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 94,
+    "sourceNumber": 70,
+    "question": "Identify employees who had overlapping project assignments.",
+    "solution": "SELECT p1.employee_id, p1.project_id AS project1, p2.project_id AS project2 FROM project_assignments p1 JOIN project_assignments p2 ON p1.employee_id = p2.employee_id AND p1.project_id <> p2.project_id WHERE p1.start_date < p2.end_date AND p1.end_date > p2.start_date;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 95,
+    "sourceNumber": 71,
+    "question": "Find customers who made purchases in every month of the current year.",
+    "solution": "WITH months AS (",
+    "category": "Date & Time",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 96,
+    "sourceNumber": 72,
+    "question": "List employees who earn more than all their subordinates.",
+    "solution": "SELECT e.id, e.name, e.salary FROM employees e WHERE e.salary > ALL ( SELECT salary FROM employees sub WHERE sub.manager_id = e.id );",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 97,
+    "sourceNumber": 73,
+    "question": "Get the product with the highest sales for each category.",
+    "solution": "WITH category_sales AS ( SELECT category_id, product_id, SUM(amount) AS total_sales, RANK() OVER (PARTITION BY category_id ORDER BY SUM(amount) DESC) AS sales_rank FROM sales GROUP BY category_id, product_id ) SELECT category_id, product_id, total_sales FROM category_sales WHERE sales_rank = 1;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 98,
+    "sourceNumber": 74,
+    "question": "Find customers who haven't ordered in the last 6 months.",
+    "solution": "SELECT customer_id FROM customers c LEFT JOIN orders o ON c.customer_id = o.customer_id GROUP BY c.customer_id HAVING MAX(o.order_date) < CURRENT_DATE INTERVAL '6 months' OR MAX(o.order_date) IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 99,
+    "sourceNumber": 75,
+    "question": "Find the maximum salary gap between any two employees within the same department.",
+    "solution": "SELECT department_id, MAX(salary) - MIN(salary) AS salary_gap FROM employees GROUP BY department_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 100,
+    "sourceNumber": 71,
+    "question": "Write a recursive query to compute the total budget under each manager (including subordinates).",
+    "solution": "WITH RECURSIVE manager_budget AS ( SELECT id, manager_id, budget FROM departments UNION ALL SELECT d.id, d.manager_id, mb.budget FROM departments d JOIN manager_budget mb ON d.manager_id = mb.id ) SELECT manager_id, SUM(budget) AS total_budget FROM manager_budget GROUP BY manager_id;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 101,
+    "sourceNumber": 72,
+    "question": "Write a query to detect gaps in a sequence of invoice numbers.",
+    "solution": "WITH numbered_invoices AS ( SELECT invoice_number, ROW_NUMBER() OVER (ORDER BY invoice_number) AS rn FROM invoices ) SELECT invoice_number + 1 AS missing_invoice FROM numbered_invoices ni WHERE (invoice_number + 1) <> ( SELECT invoice_number FROM numbered_invoices",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 102,
+    "sourceNumber": 73,
+    "question": "Calculate the rank of employees by salary within their department but restart rank numbering every 10 employees.",
+    "solution": "WITH ranked_employees AS ( SELECT e.*, ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary DESC) AS rn FROM employees e ) SELECT *, ((rn - 1) / 10) + 1 AS rank_group FROM ranked_employees;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 103,
+    "sourceNumber": 74,
+    "question": "Find the moving median of daily sales over the last 7 days for each product.",
+    "solution": "WITH daily_sales AS ( SELECT product_id, sale_date, SUM(amount) AS total_sales FROM sales GROUP BY product_id, sale_date ) SELECT product_id, sale_date, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY total_sales) OVER (PARTITION BY product_id ORDER BY sale_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS moving_median FROM daily_sales;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 104,
+    "sourceNumber": 75,
+    "question": "Find customers who purchased both product A and product B.",
+    "solution": "SELECT customer_id FROM sales WHERE product_id IN ('A', 'B') GROUP BY customer_id HAVING COUNT(DISTINCT product_id) = 2;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 105,
+    "sourceNumber": 76,
+    "question": "Write a query to generate a calendar table with all dates for the current year.",
+    "solution": "SELECT generate_series( DATE_TRUNC('year', CURRENT_DATE), DATE_TRUNC('year', CURRENT_DATE) + INTERVAL '1 year' - INTERVAL '1 day', INTERVAL '1 day' ) AS calendar_date;",
+    "category": "Date & Time",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 106,
+    "sourceNumber": 77,
+    "question": "Find employees who have worked in more than 3 different departments.",
+    "solution": "SELECT employee_id FROM employee_department_history GROUP BY employee_id HAVING COUNT(DISTINCT department_id) > 3;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 107,
+    "sourceNumber": 78,
+    "question": "Calculate the percentage contribution of each product's sales to the total sales per month.",
+    "solution": "WITH monthly_sales AS ( SELECT product_id, DATE_TRUNC('month', sale_date) AS month, SUM(amount) AS product_sales FROM sales GROUP BY product_id, month ), total_monthly_sales AS ( SELECT month, SUM(product_sales) AS total_sales FROM monthly_sales GROUP BY month ) SELECT ms.product_id, ms.month, ms.product_sales, (ms.product_sales * 100.0) / tms.total_sales AS pct_contribution FROM monthly_sales ms JOIN total_monthly_sales tms ON ms.month = tms.month;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 108,
+    "sourceNumber": 79,
+    "question": "Write a query to pivot monthly sales data for each product into columns.",
+    "solution": "SELECT product_id, SUM(CASE WHEN EXTRACT(MONTH FROM sale_date) = 1 THEN amount ELSE 0 END) AS Jan, SUM(CASE WHEN EXTRACT(MONTH FROM sale_date) = 2 THEN amount ELSE 0 END) AS Feb,",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 109,
+    "sourceNumber": 80,
+    "question": "Find the 3 most recent orders per customer including order details.",
+    "solution": "SELECT * FROM ( SELECT o.*, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date DESC) AS rn FROM orders o ) sub WHERE rn <= 3;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 110,
+    "sourceNumber": 81,
+    "question": "Find employees who have never taken any leave.",
+    "solution": "SELECT e.* FROM employees e LEFT JOIN leaves l ON e.id = l.employee_id WHERE l.leave_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 111,
+    "sourceNumber": 82,
+    "question": "List customers who placed orders in January but not in February.",
+    "solution": "WITH jan_orders AS ( SELECT DISTINCT customer_id FROM orders WHERE EXTRACT(MONTH FROM order_date) = 1 ), feb_orders AS ( SELECT DISTINCT customer_id FROM orders WHERE EXTRACT(MONTH FROM order_date) = 2 ) SELECT customer_id FROM jan_orders WHERE customer_id NOT IN (SELECT customer_id FROM feb_orders);",
+    "category": "Date & Time",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 112,
+    "sourceNumber": 83,
+    "question": "Find products that have seen a price increase in the last 6 months.",
+    "solution": "WITH price_changes AS ( SELECT product_id, price, effective_date, LAG(price) OVER (PARTITION BY product_id ORDER BY effective_date) AS prev_price FROM product_prices WHERE effective_date >= CURRENT_DATE INTERVAL '6 months' ) SELECT DISTINCT product_id FROM price_changes WHERE price > prev_price;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 113,
+    "sourceNumber": 84,
+    "question": "Find the department(s) with the second highest average salary.",
+    "solution": "WITH avg_salaries AS ( SELECT department_id, AVG(salary) AS avg_salary FROM employees GROUP BY department_id ), ranked_salaries AS ( SELECT department_id, avg_salary, DENSE_RANK() OVER (ORDER BY avg_salary DESC) AS rnk FROM avg_salaries ) SELECT department_id, avg_salary FROM ranked_salaries WHERE rnk = 2;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 114,
+    "sourceNumber": 85,
+    "question": "Find employees who joined in the same month and year.",
+    "solution": "SELECT e1.id AS emp1_id, e2.id AS emp2_id, e1.hire_date FROM employees e1 JOIN employees e2 ON e1.id <> e2.id AND EXTRACT(MONTH FROM e1.hire_date) = EXTRACT(MONTH FROM e2.hire_date) AND EXTRACT(YEAR FROM e1.hire_date) = EXTRACT(YEAR FROM e2.hire_date);",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 115,
+    "sourceNumber": 81,
+    "question": "Write a recursive query to find all employees and their level of reporting (distance from CEO).",
+    "solution": "WITH RECURSIVE hierarchy AS ( SELECT id, name, manager_id, 1 AS level FROM employees WHERE manager_id IS NULL -- CEO level UNION ALL SELECT e.id, e.name, e.manager_id, h.level + 1 FROM employees e JOIN hierarchy h ON e.manager_id = h.id ) SELECT * FROM hierarchy ORDER BY level, manager_id;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 116,
+    "sourceNumber": 82,
+    "question": "Find the second highest salary per department without using window functions.",
+    "solution": "SELECT department_id, MAX(salary) AS second_highest_salary FROM employees e1 WHERE salary < ( SELECT MAX(salary) FROM employees e2 WHERE e2.department_id = e1.department_id ) GROUP BY department_id;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 117,
+    "sourceNumber": 83,
+    "question": "Calculate the percentage change in sales for each product comparing current month to previous month.",
+    "solution": "WITH monthly_sales AS ( SELECT product_id, DATE_TRUNC('month', sale_date) AS month, SUM(amount) AS total_sales FROM sales GROUP BY product_id, month ) SELECT product_id, month, total_sales, (total_sales - LAG(total_sales) OVER (PARTITION BY product_id ORDER BY month)) * 100.0 / LAG(total_sales) OVER (PARTITION BY product_id ORDER BY month) AS pct_change FROM monthly_sales;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 118,
+    "sourceNumber": 84,
+    "question": "Write a query to identify duplicate rows (all columns) in a table.",
+    "solution": "SELECT *, COUNT(*) OVER (PARTITION BY col1, col2, col3, ...) AS cnt FROM table_name WHERE cnt > 1; (Replace col1, col2, col3, ... with actual column names)",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 119,
+    "sourceNumber": 85,
+    "question": "Write a query to unpivot quarterly sales data into rows.",
+    "solution": "SELECT product_id, 'Q1' AS quarter, Q1_sales AS sales FROM sales_data UNION ALL SELECT product_id, 'Q2', Q2_sales FROM sales_data UNION ALL SELECT product_id, 'Q3', Q3_sales FROM sales_data UNION ALL SELECT product_id, 'Q4', Q4_sales FROM sales_data;",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 120,
+    "sourceNumber": 86,
+    "question": "Find employees whose salary is above the average salary of their department but below the company-wide average.",
+    "solution": "SELECT * FROM employees e WHERE salary > (SELECT AVG(salary) FROM employees WHERE department_id = e.department_id) AND salary < (SELECT AVG(salary) FROM employees);",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 121,
+    "sourceNumber": 87,
+    "question": "Write a query to find customers with the highest purchase amount per year.",
+    "solution": "WITH yearly_sales AS (",
+    "category": "Date & Time",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 122,
+    "sourceNumber": 88,
+    "question": "Write a query to list all employees who have a salary equal to the average salary of their department.",
+    "solution": "SELECT e.* FROM employees e JOIN ( SELECT department_id, AVG(salary) AS avg_salary FROM employees GROUP BY department_id ) d ON e.department_id = d.department_id AND e.salary = d.avg_salary;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 123,
+    "sourceNumber": 89,
+    "question": "Find the first order date for each customer.",
+    "solution": "SELECT customer_id, MIN(order_date) AS first_order_date FROM orders GROUP BY customer_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 124,
+    "sourceNumber": 90,
+    "question": "Find employees who have been promoted more than twice.",
+    "solution": "SELECT employee_id, COUNT(*) AS promotion_count FROM promotions GROUP BY employee_id HAVING COUNT(*) > 2;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 125,
+    "sourceNumber": 91,
+    "question": "Find employees who have not been assigned to any project.",
+    "solution": "SELECT e.* FROM employees e LEFT JOIN project_assignments pa ON e.id = pa.employee_id WHERE pa.project_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 126,
+    "sourceNumber": 92,
+    "question": "Find the total sales per customer including those with zero sales.",
+    "solution": "SELECT c.customer_id, COALESCE(SUM(s.amount), 0) AS total_sales FROM customers c LEFT JOIN sales s ON c.customer_id = s.customer_id GROUP BY c.customer_id;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 127,
+    "sourceNumber": 93,
+    "question": "Find the highest salary by department and the employee(s) who earn it.",
+    "solution": "WITH dept_max AS ( SELECT department_id, MAX(salary) AS max_salary FROM employees GROUP BY department_id ) SELECT e.* FROM employees e JOIN dept_max d ON e.department_id = d.department_id AND e.salary = d.max_salary;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 128,
+    "sourceNumber": 94,
+    "question": "Find customers with no orders in the last year.",
+    "solution": "SELECT customer_id FROM customers c LEFT JOIN orders o ON c.customer_id = o.customer_id AND o.order_date >= CURRENT_DATE - INTERVAL '1 year' WHERE o.order_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 129,
+    "sourceNumber": 95,
+    "question": "Find employees whose salary is within 10% of the highest salary in their department.",
+    "solution": "WITH dept_max AS ( SELECT department_id, MAX(salary) AS max_salary FROM employees",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 130,
+    "sourceNumber": 96,
+    "question": "Find the running total of sales by date.",
+    "solution": "SELECT sale_date, SUM(amount) OVER (ORDER BY sale_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM sales ORDER BY sale_date;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 131,
+    "sourceNumber": 97,
+    "question": "Find employees who earn more than the average salary of the entire company.",
+    "solution": "SELECT * FROM employees WHERE salary > (SELECT AVG(salary) FROM employees);",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 132,
+    "sourceNumber": 98,
+    "question": "Get the last 3 orders placed by each customer.",
+    "solution": "SELECT * FROM ( SELECT o.*, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date DESC) AS rn FROM orders o ) sub WHERE rn <= 3;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 133,
+    "sourceNumber": 99,
+    "question": "Find the difference in days between the earliest and latest orders per customer.",
+    "solution": "SELECT customer_id, MAX(order_date) MIN(order_date) AS days_between FROM orders GROUP BY customer_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 134,
+    "sourceNumber": 100,
+    "question": "Find employees who have worked on all projects.",
+    "solution": "SELECT employee_id FROM project_assignments GROUP BY employee_id HAVING COUNT(DISTINCT project_id) = (SELECT COUNT(*) FROM projects);",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 135,
+    "sourceNumber": 101,
+    "question": "Find customers who placed orders only in the last 6 months.",
+    "solution": "SELECT customer_id FROM orders GROUP BY customer_id HAVING MIN(order_date) >= CURRENT_DATE INTERVAL '6 months';",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 136,
+    "sourceNumber": 102,
+    "question": "Get the total number of orders per day, including days with zero orders.",
+    "solution": "WITH dates AS ( SELECT generate_series(MIN(order_date), MAX(order_date), INTERVAL '1 day') AS day FROM orders ) SELECT d.day, COUNT(o.order_id) AS order_count FROM dates d LEFT JOIN orders o ON d.day = o.order_date GROUP BY d.day ORDER BY d.day;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 137,
+    "sourceNumber": 103,
+    "question": "Find the department with the most employees.",
+    "solution": "SELECT department_id, COUNT(*) AS employee_count FROM employees GROUP BY department_id ORDER BY employee_count DESC LIMIT 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 138,
+    "sourceNumber": 104,
+    "question": "Write a query to find gaps in employee IDs.",
+    "solution": "WITH numbered AS ( SELECT id, ROW_NUMBER() OVER (ORDER BY id) AS rn",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 139,
+    "sourceNumber": 105,
+    "question": "Find employees who were hired before their managers.",
+    "solution": "SELECT e.name AS employee, m.name AS manager, e.hire_date, m.hire_date AS manager_hire_date FROM employees e JOIN employees m ON e.manager_id = m.id WHERE e.hire_date < m.hire_date;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 140,
+    "sourceNumber": 106,
+    "question": "List departments with average salary greater than the overall average.",
+    "solution": "SELECT department_id, AVG(salary) AS avg_salary FROM employees GROUP BY department_id HAVING AVG(salary) > (SELECT AVG(salary) FROM employees);",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 141,
+    "sourceNumber": 107,
+    "question": "Find employees with the highest number of dependents.",
+    "solution": "SELECT employee_id, COUNT(*) AS dependent_count FROM dependents GROUP BY employee_id ORDER BY dependent_count DESC LIMIT 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 142,
+    "sourceNumber": 108,
+    "question": "Find customers with the longest gap between two consecutive orders.",
+    "solution": "WITH ordered_orders AS ( SELECT customer_id, order_date, LAG(order_date) OVER (PARTITION BY customer_id ORDER BY order_date) AS prev_order_date FROM orders ), gaps AS ( SELECT customer_id, order_date - prev_order_date AS gap_days FROM ordered_orders WHERE prev_order_date IS NOT NULL ) SELECT customer_id, MAX(gap_days) AS longest_gap FROM gaps GROUP BY customer_id ORDER BY longest_gap DESC LIMIT 1;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 143,
+    "sourceNumber": 109,
+    "question": "Find customers who ordered all products in a category.",
+    "solution": "SELECT customer_id FROM sales WHERE product_id IN (SELECT product_id FROM products WHERE category_id = 1) GROUP BY customer_id HAVING COUNT(DISTINCT product_id) = (SELECT COUNT(*) FROM products WHERE category_id = 1);",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 144,
+    "sourceNumber": 110,
+    "question": "Get the most recent order date per customer.",
+    "solution": "SELECT customer_id, MAX(order_date) AS last_order_date FROM orders GROUP BY customer_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 145,
+    "sourceNumber": 111,
+    "question": "List all employees and their manager names.",
+    "solution": "SELECT e.name AS employee, m.name AS manager FROM employees e LEFT JOIN employees m ON e.manager_id = m.id;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 146,
+    "sourceNumber": 112,
+    "question": "Find employees with the same salary as their manager.",
+    "solution": "SELECT e.name AS employee, m.name AS manager, e.salary FROM employees e JOIN employees m ON e.manager_id = m.id WHERE e.salary = m.salary;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 147,
+    "sourceNumber": 113,
+    "question": "List products with sales above the average sales amount.",
+    "solution": "WITH avg_sales AS ( SELECT AVG(amount) AS avg_amount FROM sales ) SELECT product_id, SUM(amount) AS total_sales FROM sales GROUP BY product_id HAVING SUM(amount) > (SELECT avg_amount FROM avg_sales);",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 148,
+    "sourceNumber": 114,
+    "question": "Get the number of employees hired each year.",
+    "solution": "SELECT EXTRACT(YEAR FROM hire_date) AS hire_year, COUNT(*) AS count FROM employees GROUP BY hire_year ORDER BY hire_year;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 149,
+    "sourceNumber": 115,
+    "question": "Find the number of employees with the same job title per department.",
+    "solution": "SELECT department_id, job_title, COUNT(*) AS employee_count FROM employees GROUP BY department_id, job_title;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 150,
+    "sourceNumber": 116,
+    "question": "Find employees with no manager assigned.",
+    "solution": "SELECT * FROM employees WHERE manager_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 151,
+    "sourceNumber": 117,
+    "question": "Calculate average salary by department and job title.",
+    "solution": "SELECT department_id, job_title, AVG(salary) AS avg_salary FROM employees GROUP BY department_id, job_title;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 152,
+    "sourceNumber": 118,
+    "question": "Find the median salary of employees.",
+    "solution": "SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) AS median_salary FROM employees;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 153,
+    "sourceNumber": 119,
+    "question": "Find employees who have been promoted more than once.",
+    "solution": "SELECT employee_id, COUNT(*) AS promotion_count FROM promotions GROUP BY employee_id HAVING COUNT(*) > 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 154,
+    "sourceNumber": 120,
+    "question": "Calculate total sales by product category.",
+    "solution": "SELECT p.category_id, SUM(s.amount) AS total_sales FROM sales s JOIN products p ON s.product_id = p.product_id GROUP BY p.category_id;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 155,
+    "sourceNumber": 121,
+    "question": "Find the top 3 products by sales amount.",
+    "solution": "SELECT product_id, SUM(amount) AS total_sales FROM sales GROUP BY product_id ORDER BY total_sales DESC LIMIT 3;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 156,
+    "sourceNumber": 122,
+    "question": "Get employees who joined after their department was created.",
+    "solution": "SELECT e.* FROM employees e JOIN departments d ON e.department_id = d.department_id WHERE e.hire_date > d.creation_date;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 157,
+    "sourceNumber": 123,
+    "question": "Find customers with no sales records.",
+    "solution": "SELECT c.* FROM customers c LEFT JOIN sales s ON c.customer_id = s.customer_id WHERE s.sale_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 158,
+    "sourceNumber": 124,
+    "question": "Find the second highest salary in the company.",
+    "solution": "SELECT MAX(salary) AS second_highest_salary FROM employees WHERE salary < (SELECT MAX(salary) FROM employees);",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 159,
+    "sourceNumber": 125,
+    "question": "Find products with sales only in the current month.",
+    "solution": "SELECT product_id FROM sales GROUP BY product_id HAVING MAX(sale_date) >= DATE_TRUNC('month', CURRENT_DATE) AND MIN(sale_date) >= DATE_TRUNC('month', CURRENT_DATE);",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 160,
+    "sourceNumber": 126,
+    "question": "Find employees with consecutive workdays.",
+    "solution": "WITH attendance AS ( SELECT employee_id, work_date, work_date - INTERVAL '1 day' * ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY work_date) AS grp FROM work_log ) SELECT employee_id, COUNT(*) AS consecutive_days FROM attendance GROUP BY employee_id, grp HAVING COUNT(*) > 1;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 161,
+    "sourceNumber": 127,
+    "question": "Find the average number of orders per customer.",
+    "solution": "SELECT AVG(order_count) AS avg_orders_per_customer FROM ( SELECT customer_id, COUNT(*) AS order_count FROM orders GROUP BY customer_id ) sub;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 162,
+    "sourceNumber": 128,
+    "question": "Find employees who have worked on more than 5 projects.",
+    "solution": "SELECT employee_id, COUNT(DISTINCT project_id) AS project_count FROM project_assignments GROUP BY employee_id HAVING COUNT(DISTINCT project_id) > 5;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 163,
+    "sourceNumber": 129,
+    "question": "Find the total number of products sold each day.",
+    "solution": "SELECT sale_date, SUM(quantity) AS total_quantity_sold FROM sales GROUP BY sale_date ORDER BY sale_date;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 164,
+    "sourceNumber": 130,
+    "question": "Find customers with orders totaling more than $10,000.",
+    "solution": "SELECT customer_id, SUM(amount) AS total_amount FROM sales GROUP BY customer_id HAVING SUM(amount) > 10000; Medium to Advanced SQL Questions (131-200)",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 165,
+    "sourceNumber": 131,
+    "question": "Find employees who have never received a bonus.",
+    "solution": "SELECT e.* FROM employees e LEFT JOIN bonuses b ON e.id = b.employee_id WHERE b.bonus_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 166,
+    "sourceNumber": 132,
+    "question": "Find the department with the lowest average salary.",
+    "solution": "SELECT department_id, AVG(salary) AS avg_salary FROM employees GROUP BY department_id ORDER BY avg_salary LIMIT 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 167,
+    "sourceNumber": 133,
+    "question": "Get cumulative count of orders per customer over time.",
+    "solution": "",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 168,
+    "sourceNumber": 134,
+    "question": "Find customers who ordered products only from one category.",
+    "solution": "SELECT customer_id FROM sales s JOIN products p ON s.product_id = p.product_id GROUP BY customer_id HAVING COUNT(DISTINCT p.category_id) = 1;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 169,
+    "sourceNumber": 135,
+    "question": "Write a query to display employee names alongside their manager names, including those without managers.",
+    "solution": "SELECT e.name AS employee_name, m.name AS manager_name FROM employees e LEFT JOIN employees m ON e.manager_id = m.id;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 170,
+    "sourceNumber": 136,
+    "question": "Find products with sales increasing every month for the last 3 months.",
+    "solution": "WITH monthly_sales AS ( SELECT product_id, DATE_TRUNC('month', sale_date) AS month, SUM(amount) AS total_sales FROM sales WHERE sale_date >= CURRENT_DATE INTERVAL '3 months' GROUP BY product_id, month ) SELECT product_id FROM monthly_sales GROUP BY product_id HAVING COUNT(*) = 3 AND MIN(total_sales) < MAX(total_sales) AND total_sales[1] < total_sales[2] AND total_sales[2] < total_sales[3]; -- depends on DB support Note: Exact syntax varies per RDBMS; may need window functions.",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 171,
+    "sourceNumber": 137,
+    "question": "Write a recursive query to get all descendants of a manager.",
+    "solution": "WITH RECURSIVE subordinates AS ( SELECT id, name, manager_id FROM employees WHERE id = :manager_id UNION ALL SELECT e.id, e.name, e.manager_id FROM employees e JOIN subordinates s ON e.manager_id = s.id ) SELECT * FROM subordinates WHERE id != :manager_id;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 172,
+    "sourceNumber": 138,
+    "question": "Find the department with the highest variance in salaries.",
+    "solution": "SELECT department_id, VAR_SAMP(salary) AS salary_variance FROM employees GROUP BY department_id ORDER BY salary_variance DESC LIMIT 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 173,
+    "sourceNumber": 139,
+    "question": "Calculate the difference between each order amount and the previous order amount per customer.",
+    "solution": "SELECT customer_id, order_date, amount, amount - LAG(amount) OVER (PARTITION BY customer_id ORDER BY order_date) AS diff FROM orders;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 174,
+    "sourceNumber": 140,
+    "question": "Find customers who purchased both Product A and Product B.",
+    "solution": "SELECT customer_id FROM sales WHERE product_id IN ('A', 'B') GROUP BY customer_id HAVING COUNT(DISTINCT product_id) = 2;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 175,
+    "sourceNumber": 141,
+    "question": "Find the top N customers by total sales amount.",
+    "solution": "SELECT customer_id, SUM(amount) AS total_sales",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 176,
+    "sourceNumber": 142,
+    "question": "Find the month with the highest sales in the current year.",
+    "solution": "SELECT DATE_TRUNC('month', sale_date) AS month, SUM(amount) AS total_sales FROM sales WHERE EXTRACT(YEAR FROM sale_date) = EXTRACT(YEAR FROM CURRENT_DATE) GROUP BY month ORDER BY total_sales DESC LIMIT 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 177,
+    "sourceNumber": 143,
+    "question": "Write a query to display all employees who have worked on a project longer than 6 months.",
+    "solution": "SELECT employee_id FROM project_assignments WHERE end_date - start_date > INTERVAL '6 months';",
+    "category": "Date & Time",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 178,
+    "sourceNumber": 144,
+    "question": "Find the nth highest salary in a company (e.g., 5th highest).",
+    "solution": "SELECT DISTINCT salary FROM employees ORDER BY salary DESC OFFSET n - 1 ROWS FETCH NEXT 1 ROW ONLY;",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 179,
+    "sourceNumber": 145,
+    "question": "Get the average salary of employees hired each year.",
+    "solution": "SELECT EXTRACT(YEAR FROM hire_date) AS year, AVG(salary) AS avg_salary FROM employees GROUP BY year ORDER BY year;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 180,
+    "sourceNumber": 146,
+    "question": "Find employees whose salaries are between the 25th and 75th percentile.",
+    "solution": "WITH percentiles AS ( SELECT PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY salary) AS p25, PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY salary) AS p75 FROM employees ) SELECT e.* FROM employees e, percentiles p WHERE e.salary BETWEEN p.p25 AND p.p75;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 181,
+    "sourceNumber": 147,
+    "question": "Find employees with salaries higher than their department average.",
+    "solution": "SELECT e.* FROM employees e JOIN ( SELECT department_id, AVG(salary) AS avg_salary FROM employees GROUP BY department_id ) d ON e.department_id = d.department_id WHERE e.salary > d.avg_salary; --148. Find the difference between each row's value and the previous row's value in sales. SELECT sale_date, amount, amount - LAG(amount) OVER (ORDER BY sale_date) AS diff FROM sales;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 182,
+    "sourceNumber": 149,
+    "question": "List employees who have been in the company for more than 10 years.",
+    "solution": "SELECT * FROM employees WHERE CURRENT_DATE - hire_date > INTERVAL '10 years';",
+    "category": "Date & Time",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 183,
+    "sourceNumber": 150,
+    "question": "Find the department with the most promotions.",
+    "solution": "SELECT e.department_id, COUNT(*) AS promotion_count",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 184,
+    "sourceNumber": 151,
+    "question": "Find customers who ordered products from at least 3 different categories.",
+    "solution": "SELECT customer_id FROM sales s JOIN products p ON s.product_id = p.product_id GROUP BY customer_id HAVING COUNT(DISTINCT p.category_id) >= 3;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 185,
+    "sourceNumber": 152,
+    "question": "Find the average gap (in days) between orders per customer.",
+    "solution": "WITH ordered_orders AS ( SELECT customer_id, order_date, LAG(order_date) OVER (PARTITION BY customer_id ORDER BY order_date) AS prev_order_date FROM orders ), gaps AS ( SELECT customer_id, order_date - prev_order_date AS gap FROM ordered_orders WHERE prev_order_date IS NOT NULL ) SELECT customer_id, AVG(gap) AS avg_gap_days FROM gaps GROUP BY customer_id;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 186,
+    "sourceNumber": 153,
+    "question": "List all customers who have never ordered product X.",
+    "solution": "SELECT customer_id FROM customers WHERE customer_id NOT IN ( SELECT DISTINCT customer_id FROM sales WHERE product_id = 'X' );",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 187,
+    "sourceNumber": 154,
+    "question": "Calculate total revenue and number of orders per country.",
+    "solution": "SELECT c.country, COUNT(o.order_id) AS order_count, SUM(o.amount) AS total_revenue FROM customers c JOIN orders o ON c.customer_id = o.customer_id GROUP BY c.country;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 188,
+    "sourceNumber": 155,
+    "question": "Find the employees who were hired on the same day as their managers.",
+    "solution": "SELECT e.name AS employee, m.name AS manager, e.hire_date FROM employees e JOIN employees m ON e.manager_id = m.id WHERE e.hire_date = m.hire_date;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 189,
+    "sourceNumber": 156,
+    "question": "Find the top 3 products by quantity sold in each category.",
+    "solution": "SELECT category_id, product_id, total_quantity FROM ( SELECT p.category_id, s.product_id, SUM(s.quantity) AS total_quantity, ROW_NUMBER() OVER (PARTITION BY p.category_id ORDER BY SUM(s.quantity) DESC) AS rn FROM sales s JOIN products p ON s.product_id = p.product_id GROUP BY p.category_id, s.product_id ) sub WHERE rn <= 3;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 190,
+    "sourceNumber": 157,
+    "question": "Find the difference in days between the first and last order for each customer.",
+    "solution": "SELECT customer_id, MAX(order_date) MIN(order_date) AS days_between FROM orders GROUP BY customer_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 191,
+    "sourceNumber": 158,
+    "question": "Find customers who have increased their order volume every month for the last 3 months.",
+    "solution": "WITH monthly_orders AS ( SELECT customer_id, DATE_TRUNC('month',",
+    "category": "Date & Time",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 192,
+    "sourceNumber": 159,
+    "question": "Find employees who have the same salary as the average salary in their job title.",
+    "solution": "SELECT e.* FROM employees e JOIN ( SELECT job_title, AVG(salary) AS avg_salary FROM employees GROUP BY job_title ) j ON e.job_title = j.job_title WHERE e.salary = j.avg_salary;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 193,
+    "sourceNumber": 160,
+    "question": "Write a query to calculate the difference in salary between employees and their managers.",
+    "solution": "SELECT e.name, m.name AS manager_name, e.salary, m.salary AS manager_salary, e.salary - m.salary AS salary_diff FROM employees e JOIN employees m ON e.manager_id = m.id;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 194,
+    "sourceNumber": 161,
+    "question": "List the departments with no employees.",
+    "solution": "SELECT d.* FROM departments d LEFT JOIN employees e ON d.department_id = e.department_id WHERE e.id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 195,
+    "sourceNumber": 162,
+    "question": "Find the employee with the maximum salary in each department.",
+    "solution": "WITH dept_max AS ( SELECT department_id, MAX(salary) AS max_salary FROM employees GROUP BY department_id ) SELECT e.* FROM employees e JOIN dept_max d ON e.department_id = d.department_id AND e.salary = d.max_salary;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 196,
+    "sourceNumber": 163,
+    "question": "Find customers with orders on every day in the last week.",
+    "solution": "WITH days AS ( SELECT generate_series(CURRENT_DATE INTERVAL '6 days', CURRENT_DATE, INTERVAL '1 day') AS day ) SELECT customer_id FROM orders o JOIN days d ON o.order_date = d.day GROUP BY customer_id HAVING COUNT(DISTINCT o.order_date) = 7;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 197,
+    "sourceNumber": 164,
+    "question": "Find the product that has been sold in the highest quantity in a single order.",
+    "solution": "SELECT product_id, MAX(quantity) AS max_quantity_in_order FROM sales GROUP BY product_id ORDER BY max_quantity_in_order DESC LIMIT 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 198,
+    "sourceNumber": 165,
+    "question": "Find employees who joined before their department was created.",
+    "solution": "SELECT e.* FROM employees e JOIN departments d ON e.department_id = d.department_id WHERE e.hire_date < d.creation_date;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 199,
+    "sourceNumber": 166,
+    "question": "Find customers with sales in at least 3 different years.",
+    "solution": "SELECT customer_id FROM sales GROUP BY customer_id",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 200,
+    "sourceNumber": 167,
+    "question": "Find employees whose salary is above the company's average but below their department's average.",
+    "solution": "WITH company_avg AS (SELECT AVG(salary) AS avg_salary FROM employees), dept_avg AS ( SELECT department_id, AVG(salary) AS avg_salary FROM employees GROUP BY department_id ) SELECT e.* FROM employees e, company_avg ca JOIN dept_avg da ON e.department_id = da.department_id WHERE e.salary > ca.avg_salary AND e.salary < da.avg_salary;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 201,
+    "sourceNumber": 168,
+    "question": "Find the average order amount per customer per year.",
+    "solution": "SELECT customer_id, EXTRACT(YEAR FROM order_date) AS year, AVG(amount) AS avg_order_amount FROM orders GROUP BY customer_id, year;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 202,
+    "sourceNumber": 169,
+    "question": "Find employees who have worked on at least one project with a budget over $1,000,000.",
+    "solution": "SELECT DISTINCT pa.employee_id FROM project_assignments pa JOIN projects p ON pa.project_id = p.project_id WHERE p.budget > 1000000;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 203,
+    "sourceNumber": 170,
+    "question": "Find the most recent promotion date per employee.",
+    "solution": "SELECT employee_id, MAX(promotion_date) AS last_promotion_date FROM promotions GROUP BY employee_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 204,
+    "sourceNumber": 171,
+    "question": "Find customers who made orders totaling more than the average order amount.",
+    "solution": "WITH avg_order AS ( SELECT AVG(amount) AS avg_amount FROM orders ) SELECT customer_id, SUM(amount) AS total_amount FROM orders GROUP BY customer_id HAVING SUM(amount) > (SELECT avg_amount FROM avg_order);",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 205,
+    "sourceNumber": 172,
+    "question": "Find products never ordered.",
+    "solution": "SELECT product_id FROM products WHERE product_id NOT IN (SELECT DISTINCT product_id FROM sales);",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 206,
+    "sourceNumber": 173,
+    "question": "Find the month with the lowest sales in the past year.",
+    "solution": "SELECT DATE_TRUNC('month', sale_date) AS month, SUM(amount) AS total_sales FROM sales WHERE sale_date >= CURRENT_DATE INTERVAL '1 year' GROUP BY month ORDER BY total_sales LIMIT 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 207,
+    "sourceNumber": 174,
+    "question": "Calculate the number of employees hired each month in the last year.",
+    "solution": "SELECT DATE_TRUNC('month', hire_date) AS month, COUNT(*) AS hires FROM employees WHERE hire_date >= CURRENT_DATE INTERVAL '1 year' GROUP BY month ORDER BY month;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 208,
+    "sourceNumber": 175,
+    "question": "Find the department with the highest number of projects.",
+    "solution": "",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 209,
+    "sourceNumber": 176,
+    "question": "Find employees who do not have dependents.",
+    "solution": "SELECT e.* FROM employees e LEFT JOIN dependents d ON e.id = d.employee_id WHERE d.dependent_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 210,
+    "sourceNumber": 177,
+    "question": "Get the total sales amount for each product category including categories with zero sales.",
+    "solution": "SELECT c.category_id, COALESCE(SUM(s.amount), 0) AS total_sales FROM categories c LEFT JOIN products p ON c.category_id = p.category_id LEFT JOIN sales s ON p.product_id = s.product_id GROUP BY c.category_id;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 211,
+    "sourceNumber": 178,
+    "question": "Find employees who have been promoted but their salary didn't increase.",
+    "solution": "SELECT e.id, e.name FROM employees e JOIN promotions p ON e.id = p.employee_id WHERE e.salary <= (SELECT salary_before FROM promotion_history WHERE employee_id = e.id ORDER BY promotion_date DESC LIMIT 1);",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 212,
+    "sourceNumber": 179,
+    "question": "Find customers with average order amount above $500.",
+    "solution": "SELECT customer_id, AVG(amount) AS avg_order_amount FROM orders GROUP BY customer_id HAVING AVG(amount) > 500;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 213,
+    "sourceNumber": 180,
+    "question": "Find orders where the total quantity exceeds 100 units.",
+    "solution": "SELECT order_id, SUM(quantity) AS total_quantity FROM order_items GROUP BY order_id HAVING SUM(quantity) > 100;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 214,
+    "sourceNumber": 181,
+    "question": "Find products whose sales have doubled compared to the previous month.",
+    "solution": "WITH monthly_sales AS ( SELECT product_id, DATE_TRUNC('month', sale_date) AS month, SUM(amount) AS total_sales FROM sales GROUP BY product_id, month ), sales_comparison AS ( SELECT product_id, month, total_sales, LAG(total_sales) OVER (PARTITION BY product_id ORDER BY month) AS prev_month_sales FROM monthly_sales ) SELECT product_id, month FROM sales_comparison WHERE prev_month_sales IS NOT NULL AND total_sales >= 2 * prev_month_sales;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 215,
+    "sourceNumber": 182,
+    "question": "Write a query to find employees who worked on more than 3 projects in 2023.",
+    "solution": "SELECT employee_id, COUNT(DISTINCT project_id) AS project_count FROM project_assignments WHERE assignment_date BETWEEN '2023-01-01' AND '2023-12-31' GROUP BY employee_id HAVING COUNT(DISTINCT project_id) > 3;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 216,
+    "sourceNumber": 183,
+    "question": "Find customers whose last order was placed more than 1 year ago.",
+    "solution": "SELECT customer_id, MAX(order_date) AS last_order_date FROM orders GROUP BY customer_id HAVING MAX(order_date) < CURRENT_DATE INTERVAL '1 year';",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 217,
+    "sourceNumber": 184,
+    "question": "Find the average salary increase percentage per department.",
+    "solution": "SELECT e.department_id, AVG((e.salary p.old_salary) / p.old_salary * 100) AS avg_increase_pct FROM employees e JOIN promotions p ON e.id = p.employee_id GROUP BY e.department_id;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 218,
+    "sourceNumber": 185,
+    "question": "Find employees who have never been promoted.",
+    "solution": "SELECT * FROM employees WHERE id NOT IN (SELECT DISTINCT employee_id FROM promotions);",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 219,
+    "sourceNumber": 186,
+    "question": "Find products ordered by all customers.",
+    "solution": "SELECT product_id FROM sales GROUP BY product_id HAVING COUNT(DISTINCT customer_id) = (SELECT COUNT(*) FROM customers);",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 220,
+    "sourceNumber": 187,
+    "question": "Find customers with orders totaling more than $5000 in the last 6 months.",
+    "solution": "SELECT customer_id, SUM(amount) AS total_amount FROM orders WHERE order_date >= CURRENT_DATE INTERVAL '6 months' GROUP BY customer_id HAVING SUM(amount) > 5000;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 221,
+    "sourceNumber": 188,
+    "question": "Find the rank of employees based on salary within their department.",
+    "solution": "SELECT *, RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) AS salary_rank FROM employees;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 222,
+    "sourceNumber": 189,
+    "question": "Find customers who purchased a product but never reordered it.",
+    "solution": "WITH order_counts AS ( SELECT customer_id, product_id, COUNT(*) AS order_count FROM sales GROUP BY customer_id, product_id ) SELECT customer_id, product_id FROM order_counts WHERE order_count = 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 223,
+    "sourceNumber": 190,
+    "question": "Find the day with the highest number of new hires.",
+    "solution": "SELECT hire_date, COUNT(*) AS hires FROM employees GROUP BY hire_date ORDER BY hires DESC LIMIT 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 224,
+    "sourceNumber": 191,
+    "question": "Find the number of employees who have worked in more than one department.",
+    "solution": "SELECT employee_id FROM employee_department_history GROUP BY employee_id HAVING COUNT(DISTINCT department_id) > 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 225,
+    "sourceNumber": 192,
+    "question": "Find customers who ordered the most products in 2023.",
+    "solution": "SELECT customer_id, SUM(quantity) AS total_quantity FROM sales WHERE EXTRACT(YEAR FROM sale_date) = 2023 GROUP BY customer_id ORDER BY total_quantity DESC LIMIT 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 226,
+    "sourceNumber": 193,
+    "question": "Find the average days taken to ship orders per shipping method.",
+    "solution": "SELECT shipping_method, AVG(shipping_date order_date) AS avg_shipping_days FROM orders GROUP BY shipping_method;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 227,
+    "sourceNumber": 194,
+    "question": "Find employees with overlapping project assignments.",
+    "solution": "SELECT pa1.employee_id, pa1.project_id, pa2.project_id AS overlapping_project",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 228,
+    "sourceNumber": 195,
+    "question": "Find the total number of unique customers per product category.",
+    "solution": "SELECT p.category_id, COUNT(DISTINCT s.customer_id) AS unique_customers FROM sales s JOIN products p ON s.product_id = p.product_id GROUP BY p.category_id;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 229,
+    "sourceNumber": 196,
+    "question": "Find customers whose orders increased by at least 20% compared to the previous month.",
+    "solution": "WITH monthly_orders AS ( SELECT customer_id, DATE_TRUNC('month', order_date) AS month, COUNT(*) AS order_count FROM orders GROUP BY customer_id, month ), orders_comparison AS ( SELECT customer_id, month, order_count, LAG(order_count) OVER (PARTITION BY customer_id ORDER BY month) AS prev_order_count FROM monthly_orders ) SELECT customer_id, month FROM orders_comparison WHERE prev_order_count IS NOT NULL AND order_count >= 1.2 * prev_order_count;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 230,
+    "sourceNumber": 197,
+    "question": "Find employees with no projects assigned in the last 6 months.",
+    "solution": "SELECT e.* FROM employees e LEFT JOIN project_assignments pa ON e.id = pa.employee_id AND pa.start_date >= CURRENT_DATE - INTERVAL '6 months' WHERE pa.project_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 231,
+    "sourceNumber": 198,
+    "question": "Find the number of employees who have changed departments more than twice.",
+    "solution": "SELECT employee_id FROM employee_department_history GROUP BY employee_id HAVING COUNT(DISTINCT department_id) > 2;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 232,
+    "sourceNumber": 199,
+    "question": "Find the product with the highest average rating.",
+    "solution": "SELECT product_id, AVG(rating) AS avg_rating FROM product_reviews GROUP BY product_id ORDER BY avg_rating DESC LIMIT 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 233,
+    "sourceNumber": 200,
+    "question": "Find customers who have placed orders but never used a discount.",
+    "solution": "SELECT DISTINCT customer_id FROM orders WHERE discount_used = FALSE; Medium to Advanced SQL Questions (201-300)",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 234,
+    "sourceNumber": 201,
+    "question": "Find employees who have worked on every project in their department.",
+    "solution": "SELECT e.id, e.name FROM employees e JOIN projects p ON e.department_id = p.department_id LEFT JOIN project_assignments pa ON e.id = pa.employee_id AND p.project_id = pa.project_id GROUP BY e.id, e.name, p.department_id HAVING COUNT(p.project_id) = COUNT(pa.project_id);",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 235,
+    "sourceNumber": 202,
+    "question": "Find the average order amount excluding the top 5% largest orders.",
+    "solution": "WITH ordered_orders AS ( SELECT amount, NTILE(100) OVER (ORDER BY amount DESC) AS percentile FROM orders",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 236,
+    "sourceNumber": 203,
+    "question": "Find the top 3 employees with the highest salary increase over last year.",
+    "solution": "WITH salary_last_year AS ( SELECT employee_id, salary AS last_year_salary FROM salaries WHERE year = EXTRACT(YEAR FROM CURRENT_DATE) - 1 ), salary_this_year AS ( SELECT employee_id, salary AS this_year_salary FROM salaries WHERE year = EXTRACT(YEAR FROM CURRENT_DATE) ) SELECT t.employee_id, t.this_year_salary l.last_year_salary AS salary_increase FROM salary_this_year t JOIN salary_last_year l ON t.employee_id = l.employee_id ORDER BY salary_increase DESC LIMIT 3;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 237,
+    "sourceNumber": 204,
+    "question": "Find employees with the longest consecutive workdays.",
+    "solution": "WITH workdays AS ( SELECT employee_id, work_date, ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY work_date) ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY work_date) AS grp FROM attendance ), consecutive_days AS ( SELECT employee_id, COUNT(*) AS consecutive_days FROM workdays GROUP BY employee_id, grp ) SELECT employee_id, MAX(consecutive_days) AS max_consecutive_days FROM consecutive_days GROUP BY employee_id;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 238,
+    "sourceNumber": 205,
+    "question": "Find all managers who do not manage any employee.",
+    "solution": "SELECT DISTINCT manager_id FROM employees WHERE manager_id NOT IN (SELECT DISTINCT id FROM employees);",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 239,
+    "sourceNumber": 206,
+    "question": "Find the average salary of employees hired each month.",
+    "solution": "SELECT EXTRACT(YEAR FROM hire_date) AS year, EXTRACT(MONTH FROM hire_date) AS month, AVG(salary) AS avg_salary FROM employees GROUP BY year, month ORDER BY year, month; --207. Find the first 5 orders after a customer's registration date. SELECT order_id, customer_id, order_date FROM ( SELECT order_id, customer_id, order_date, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date) AS rn FROM orders JOIN customers c ON orders.customer_id = c.customer_id WHERE order_date >= c.registration_date ) sub WHERE rn <= 5;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 240,
+    "sourceNumber": 208,
+    "question": "Find customers who placed orders every month for the last 6 months.",
+    "solution": "WITH months AS ( SELECT generate_series( DATE_TRUNC('month', CURRENT_DATE) INTERVAL '5 months', DATE_TRUNC('month', CURRENT_DATE),",
+    "category": "Date & Time",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 241,
+    "sourceNumber": 209,
+    "question": "Calculate the moving average of sales over the last 3 days.",
+    "solution": "SELECT sale_date, product_id, amount, AVG(amount) OVER (PARTITION BY product_id ORDER BY sale_date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS moving_avg_3_days FROM sales;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 242,
+    "sourceNumber": 210,
+    "question": "Find the number of employees who share the same birthday.",
+    "solution": "SELECT birth_date, COUNT(*) AS count_employees FROM employees GROUP BY birth_date HAVING COUNT(*) > 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 243,
+    "sourceNumber": 211,
+    "question": "Find customers who ordered the same product multiple times in one day.",
+    "solution": "SELECT customer_id, product_id, order_date, COUNT(*) AS order_count FROM sales GROUP BY customer_id, product_id, order_date HAVING COUNT(*) > 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 244,
+    "sourceNumber": 212,
+    "question": "Find the total sales for each product including products with zero sales.",
+    "solution": "SELECT p.product_id, COALESCE(SUM(s.amount), 0) AS total_sales FROM products p LEFT JOIN sales s ON p.product_id = s.product_id GROUP BY p.product_id;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 245,
+    "sourceNumber": 213,
+    "question": "List the top 5 employees by number of projects in each department.",
+    "solution": "SELECT department_id, employee_id, project_count FROM ( SELECT e.department_id, pa.employee_id, COUNT(DISTINCT pa.project_id) AS project_count, ROW_NUMBER() OVER (PARTITION BY e.department_id ORDER BY COUNT(DISTINCT pa.project_id) DESC) AS rn FROM project_assignments pa JOIN employees e ON pa.employee_id = e.id GROUP BY e.department_id, pa.employee_id ) sub WHERE rn <= 5;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 246,
+    "sourceNumber": 214,
+    "question": "Find the day with the largest difference between maximum and minimum temperature.",
+    "solution": "SELECT weather_date, MAX(temperature) MIN(temperature) AS temp_diff FROM weather_data GROUP BY weather_date ORDER BY temp_diff DESC LIMIT 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 247,
+    "sourceNumber": 215,
+    "question": "Find the 3 most recent orders per customer.",
+    "solution": "SELECT order_id, customer_id, order_date FROM ( SELECT order_id, customer_id, order_date, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date DESC) AS rn FROM orders ) sub WHERE rn <= 3;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 248,
+    "sourceNumber": 216,
+    "question": "Find products with sales only in a specific country.",
+    "solution": "SELECT product_id FROM sales s JOIN customers c ON s.customer_id = c.customer_id GROUP BY product_id HAVING COUNT(DISTINCT c.country) = 1;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 249,
+    "sourceNumber": 217,
+    "question": "Find employees with a salary greater than all employees in department 10.",
+    "solution": "SELECT * FROM employees WHERE salary > ALL ( SELECT salary FROM employees WHERE department_id = 10 );",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 250,
+    "sourceNumber": 218,
+    "question": "Find the percentage of employees in each department.",
+    "solution": "WITH total_employees AS (SELECT COUNT(*) AS total FROM employees) SELECT department_id, COUNT(*) * 100.0 / (SELECT total FROM total_employees) AS percentage FROM employees GROUP BY department_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 251,
+    "sourceNumber": 219,
+    "question": "Find the median salary per department.",
+    "solution": "SELECT department_id, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) AS median_salary FROM employees GROUP BY department_id;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 252,
+    "sourceNumber": 220,
+    "question": "Find the employee who worked the most hours in a project.",
+    "solution": "SELECT employee_id, project_id, MAX(hours_worked) AS max_hours FROM project_assignments GROUP BY employee_id, project_id ORDER BY max_hours DESC LIMIT 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 253,
+    "sourceNumber": 221,
+    "question": "Find the first order date for each customer.",
+    "solution": "SELECT customer_id, MIN(order_date) AS first_order_date FROM orders GROUP BY customer_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 254,
+    "sourceNumber": 222,
+    "question": "Find the second most expensive product per category.",
+    "solution": "SELECT category_id, product_id, price FROM ( SELECT category_id, product_id, price, ROW_NUMBER() OVER (PARTITION BY category_id ORDER BY price DESC) AS rn FROM products ) sub WHERE rn = 2;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 255,
+    "sourceNumber": 223,
+    "question": "Find employees with the highest salary in each job title.",
+    "solution": "WITH max_salary_per_job AS ( SELECT job_title, MAX(salary) AS max_salary FROM employees GROUP BY job_title ) SELECT e.* FROM employees e JOIN max_salary_per_job m ON e.job_title = m.job_title AND e.salary = m.max_salary;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 256,
+    "sourceNumber": 224,
+    "question": "Calculate the ratio of males to females in each department.",
+    "solution": "SELECT department_id, SUM(CASE WHEN gender = 'M' THEN 1 ELSE 0 END) * 1.0 / NULLIF(SUM(CASE WHEN gender = 'F' THEN 1 ELSE 0 END), 0) AS male_to_female_ratio FROM employees GROUP BY department_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 257,
+    "sourceNumber": 225,
+    "question": "Find customers who spent more than average in their country.",
+    "solution": "WITH avg_spent_per_country AS ( SELECT c.country, AVG(o.amount) AS avg_amount FROM customers c JOIN orders o ON c.customer_id = o.customer_id GROUP BY c.country ) SELECT c.customer_id, SUM(o.amount) AS total_spent FROM customers c JOIN orders o ON c.customer_id = o.customer_id JOIN avg_spent_per_country a ON c.country = a.country GROUP BY c.customer_id, c.country, a.avg_amount HAVING SUM(o.amount) > a.avg_amount;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 258,
+    "sourceNumber": 226,
+    "question": "Find employees who have not been assigned to any project in the last year.",
+    "solution": "SELECT e.* FROM employees e LEFT JOIN project_assignments pa ON e.id = pa.employee_id AND pa.assignment_date >= CURRENT_DATE - INTERVAL '1 year' WHERE pa.project_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 259,
+    "sourceNumber": 227,
+    "question": "Find the top 3 customers by total order amount in each region.",
+    "solution": "SELECT region, customer_id, total_amount FROM ( SELECT c.region, o.customer_id, SUM(o.amount) AS total_amount, ROW_NUMBER() OVER (PARTITION BY c.region ORDER BY SUM(o.amount) DESC) AS rn FROM customers c JOIN orders o ON c.customer_id = o.customer_id GROUP BY c.region, o.customer_id ) sub WHERE rn <= 3;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 260,
+    "sourceNumber": 228,
+    "question": "Find employees hired after their managers.",
+    "solution": "SELECT e.name AS employee_name, m.name AS manager_name, e.hire_date, m.hire_date AS manager_hire_date FROM employees e JOIN employees m ON e.manager_id = m.id WHERE e.hire_date > m.hire_date;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 261,
+    "sourceNumber": 229,
+    "question": "Find customers who ordered all products from a specific category.",
+    "solution": "WITH category_products AS ( SELECT product_id FROM products WHERE category_id = :category_id ), customer_products AS ( SELECT customer_id, product_id FROM sales WHERE product_id IN (SELECT product_id FROM category_products) GROUP BY customer_id, product_id ) SELECT customer_id FROM customer_products GROUP BY customer_id HAVING COUNT(DISTINCT product_id) = (SELECT COUNT(*) FROM category_products);",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 262,
+    "sourceNumber": 230,
+    "question": "Find employees with the highest number of direct reports.",
+    "solution": "SELECT manager_id, COUNT(*) AS report_count FROM employees WHERE manager_id IS NOT NULL GROUP BY manager_id ORDER BY report_count DESC LIMIT 1;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 263,
+    "sourceNumber": 231,
+    "question": "Calculate the retention rate of customers monthover-month.",
+    "solution": "WITH monthly_customers AS ( SELECT customer_id, DATE_TRUNC('month',",
+    "category": "Date & Time",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 264,
+    "sourceNumber": 232,
+    "question": "Find the average time difference between order and delivery.",
+    "solution": "SELECT AVG(delivery_date - order_date) AS avg_delivery_time FROM orders WHERE delivery_date IS NOT NULL;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 265,
+    "sourceNumber": 233,
+    "question": "Find the department with the youngest average employee age.",
+    "solution": "SELECT department_id, AVG(EXTRACT(YEAR FROM AGE(CURRENT_DATE, birth_date))) AS avg_age FROM employees GROUP BY department_id ORDER BY avg_age LIMIT 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 266,
+    "sourceNumber": 234,
+    "question": "Find products that were sold in every quarter of the current year.",
+    "solution": "WITH quarterly_sales AS ( SELECT product_id, DATE_TRUNC('quarter', sale_date) AS quarter FROM sales WHERE EXTRACT(YEAR FROM sale_date) = EXTRACT(YEAR FROM CURRENT_DATE) GROUP BY product_id, quarter ) SELECT product_id FROM quarterly_sales GROUP BY product_id HAVING COUNT(DISTINCT quarter) = 4;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 267,
+    "sourceNumber": 235,
+    "question": "Find customers whose orders decreased consecutively for 3 months.",
+    "solution": "WITH monthly_orders AS ( SELECT customer_id, DATE_TRUNC('month', order_date) AS month, COUNT(*) AS order_count FROM orders GROUP BY customer_id, month ), orders_with_lag AS ( SELECT customer_id, month, order_count, LAG(order_count, 1) OVER (PARTITION BY customer_id ORDER BY month) AS prev_1, LAG(order_count, 2) OVER (PARTITION BY customer_id ORDER BY month) AS prev_2 FROM monthly_orders ) SELECT DISTINCT customer_id FROM orders_with_lag WHERE order_count < prev_1 AND prev_1 < prev_2;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 268,
+    "sourceNumber": 236,
+    "question": "Find the employee(s) with the highest number of late arrivals.",
+    "solution": "SELECT employee_id, COUNT(*) AS late_count FROM attendance WHERE arrival_time > scheduled_start_time GROUP BY employee_id ORDER BY late_count DESC",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 269,
+    "sourceNumber": 237,
+    "question": "Find the most common product combinations in orders (pairs).",
+    "solution": "WITH order_pairs AS ( SELECT o1.order_id, o1.product_id AS product1, o2.product_id AS product2 FROM order_items o1 JOIN order_items o2 ON o1.order_id = o2.order_id AND o1.product_id < o2.product_id ) SELECT product1, product2, COUNT(*) AS pair_count FROM order_pairs GROUP BY product1, product2 ORDER BY pair_count DESC LIMIT 10;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 270,
+    "sourceNumber": 238,
+    "question": "Find employees who have worked more than 40 hours in a week.",
+    "solution": "WITH weekly_hours AS ( SELECT employee_id, DATE_TRUNC('week', work_date) AS week_start, SUM(hours_worked) AS total_hours FROM work_logs GROUP BY employee_id, week_start ) SELECT employee_id, week_start, total_hours FROM weekly_hours WHERE total_hours > 40;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 271,
+    "sourceNumber": 239,
+    "question": "Find the total revenue generated per sales representative.",
+    "solution": "SELECT sales_rep_id, SUM(amount) AS total_revenue FROM sales GROUP BY sales_rep_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 272,
+    "sourceNumber": 240,
+    "question": "Find customers with no orders in the last year.",
+    "solution": "SELECT customer_id FROM customers WHERE customer_id NOT IN ( SELECT DISTINCT customer_id FROM orders WHERE order_date >= CURRENT_DATE INTERVAL '1 year' );",
+    "category": "Date & Time",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 273,
+    "sourceNumber": 241,
+    "question": "Find products with an increasing sales trend over the last 3 months.",
+    "solution": "WITH monthly_sales AS ( SELECT product_id, DATE_TRUNC('month', sale_date) AS month, SUM(amount) AS total_sales FROM sales WHERE sale_date >= CURRENT_DATE INTERVAL '3 months' GROUP BY product_id, month ), sales_ranked AS ( SELECT product_id, month, total_sales, LAG(total_sales) OVER (PARTITION BY product_id ORDER BY month) AS prev_month_sales, LAG(total_sales, 2) OVER (PARTITION BY product_id ORDER BY month) AS prev_2_month_sales FROM monthly_sales ) SELECT DISTINCT product_id FROM sales_ranked WHERE total_sales > prev_month_sales AND prev_month_sales > prev_2_month_sales;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 274,
+    "sourceNumber": 242,
+    "question": "Find departments where average salary is higher than the company average.",
+    "solution": "WITH company_avg AS ( SELECT AVG(salary) AS avg_salary FROM employees ) SELECT department_id, AVG(salary) AS dept_avg FROM employees GROUP BY department_id HAVING AVG(salary) > (SELECT avg_salary FROM company_avg);",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 275,
+    "sourceNumber": 243,
+    "question": "Find customers with orders where no product quantity is less than 5.",
+    "solution": "",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 276,
+    "sourceNumber": 244,
+    "question": "Find products ordered only by customers from one country.",
+    "solution": "SELECT product_id FROM sales s JOIN customers c ON s.customer_id = c.customer_id GROUP BY product_id HAVING COUNT(DISTINCT c.country) = 1;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 277,
+    "sourceNumber": 245,
+    "question": "Find employees who have not submitted their timesheets in the last month.",
+    "solution": "SELECT e.id, e.name FROM employees e LEFT JOIN timesheets t ON e.id = t.employee_id AND t.timesheet_date >= CURRENT_DATE - INTERVAL '1 month' WHERE t.timesheet_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 278,
+    "sourceNumber": 246,
+    "question": "Find the total discount given in each month.",
+    "solution": "SELECT DATE_TRUNC('month', order_date) AS month, SUM(discount_amount) AS total_discount FROM orders GROUP BY month ORDER BY month;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 279,
+    "sourceNumber": 247,
+    "question": "Find customers who have placed orders but never paid by credit card.",
+    "solution": "SELECT DISTINCT customer_id FROM orders WHERE payment_method != 'Credit Card';",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 280,
+    "sourceNumber": 248,
+    "question": "Find employees whose salaries are within 10% of their department's average salary.",
+    "solution": "WITH dept_avg AS ( SELECT department_id, AVG(salary) AS avg_salary FROM employees GROUP BY department_id ) SELECT e.* FROM employees e JOIN dept_avg d ON e.department_id = d.department_id WHERE e.salary BETWEEN d.avg_salary * 0.9 AND d.avg_salary * 1.1;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 281,
+    "sourceNumber": 249,
+    "question": "Find customers who ordered the most products in each category.",
+    "solution": "WITH product_totals AS ( SELECT c.customer_id, p.category_id, SUM(s.quantity) AS total_quantity, RANK() OVER (PARTITION BY p.category_id ORDER BY SUM(s.quantity) DESC) AS rank FROM sales s JOIN products p ON s.product_id = p.product_id JOIN customers c ON s.customer_id = c.customer_id GROUP BY c.customer_id, p.category_id ) SELECT customer_id, category_id, total_quantity FROM product_totals WHERE rank = 1;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 282,
+    "sourceNumber": 250,
+    "question": "Find the top 5 longest projects.",
+    "solution": "SELECT project_id, start_date, end_date, end_date - start_date AS duration FROM projects ORDER BY duration DESC LIMIT 5;",
+    "category": "Date & Time",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 283,
+    "sourceNumber": 251,
+    "question": "Find employees who have not taken any leave in the last 6 months.",
+    "solution": "SELECT e.id, e.name FROM employees e LEFT JOIN leaves l ON e.id = l.employee_id AND l.leave_date >= CURRENT_DATE - INTERVAL '6 months' WHERE l.leave_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 284,
+    "sourceNumber": 252,
+    "question": "Find the department with the most projects completed last year.",
+    "solution": "SELECT department_id, COUNT(*) AS completed_projects FROM projects WHERE status = 'Completed' AND completion_date BETWEEN DATE_TRUNC('year', CURRENT_DATE) - INTERVAL '1 year' AND DATE_TRUNC('year', CURRENT_DATE) INTERVAL '1 day' GROUP BY department_id ORDER BY completed_projects DESC LIMIT 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 285,
+    "sourceNumber": 253,
+    "question": "Find customers who have increased their order frequency month-over-month for 3 consecutive months.",
+    "solution": "WITH monthly_orders AS ( SELECT customer_id, DATE_TRUNC('month', order_date) AS month, COUNT(*) AS order_count FROM orders GROUP BY customer_id, month ), orders_with_lag AS ( SELECT customer_id, month, order_count, LAG(order_count, 1) OVER (PARTITION BY customer_id ORDER BY month) AS prev_1, LAG(order_count, 2) OVER (PARTITION BY customer_id ORDER BY month) AS prev_2 FROM monthly_orders ) SELECT DISTINCT customer_id FROM orders_with_lag WHERE order_count > prev_1 AND prev_1 > prev_2;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 286,
+    "sourceNumber": 254,
+    "question": "Find employees who have been assigned projects outside their department.",
+    "solution": "SELECT DISTINCT e.id, e.name FROM employees e JOIN project_assignments pa ON e.id = pa.employee_id JOIN projects p ON pa.project_id = p.project_id WHERE e.department_id != p.department_id;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 287,
+    "sourceNumber": 255,
+    "question": "Calculate the average time to close tickets per support agent.",
+    "solution": "SELECT support_agent_id, AVG(closed_date opened_date) AS avg_close_time FROM support_tickets WHERE closed_date IS NOT NULL GROUP BY support_agent_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 288,
+    "sourceNumber": 256,
+    "question": "Find the first and last login date for each user.",
+    "solution": "SELECT user_id, MIN(login_date) AS first_login, MAX(login_date) AS last_login FROM user_logins GROUP BY user_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 289,
+    "sourceNumber": 257,
+    "question": "Find customers who made purchases only in one month of the year.",
+    "solution": "WITH customer_months AS ( SELECT customer_id, DATE_TRUNC('month', order_date) AS month FROM orders GROUP BY customer_id, month ) SELECT customer_id FROM customer_months GROUP BY customer_id HAVING COUNT(*) = 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 290,
+    "sourceNumber": 258,
+    "question": "Find products with sales revenue above the average revenue per product.",
+    "solution": "WITH avg_revenue AS ( SELECT AVG(total_revenue) AS avg_rev FROM ( SELECT product_id, SUM(amount) AS total_revenue FROM sales GROUP BY product_id ) sub ) SELECT product_id, SUM(amount) AS total_revenue",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 291,
+    "sourceNumber": 259,
+    "question": "Find departments where more than 50% of employees have a salary above $60,000.",
+    "solution": "SELECT department_id FROM employees GROUP BY department_id HAVING AVG(CASE WHEN salary > 60000 THEN 1 ELSE 0 END) > 0.5;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 292,
+    "sourceNumber": 260,
+    "question": "Find employees who worked on all projects in the company.",
+    "solution": "WITH total_projects AS ( SELECT COUNT(DISTINCT project_id) AS project_count FROM projects ), employee_projects AS ( SELECT employee_id, COUNT(DISTINCT project_id) AS projects_worked FROM project_assignments GROUP BY employee_id ) SELECT ep.employee_id FROM employee_projects ep JOIN total_projects tp ON 1=1 WHERE ep.projects_worked = tp.project_count;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 293,
+    "sourceNumber": 261,
+    "question": "Find customers who ordered products from all categories.",
+    "solution": "WITH category_count AS ( SELECT COUNT(DISTINCT category_id) AS total_categories FROM products ), customer_categories AS ( SELECT customer_id, COUNT(DISTINCT p.category_id) AS categories_ordered FROM sales s JOIN products p ON s.product_id = p.product_id GROUP BY customer_id ) SELECT customer_id FROM customer_categories JOIN category_count ON 1=1 WHERE categories_ordered = total_categories;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 294,
+    "sourceNumber": 262,
+    "question": "Find the average tenure of employees by department.",
+    "solution": "SELECT department_id, AVG(DATE_PART('year', CURRENT_DATE - hire_date)) AS avg_tenure_years FROM employees GROUP BY department_id;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 295,
+    "sourceNumber": 263,
+    "question": "Find the number of orders placed on weekends vs weekdays.",
+    "solution": "SELECT CASE WHEN EXTRACT(DOW FROM order_date) IN (0,6) THEN 'Weekend' ELSE 'Weekday' END AS day_type, COUNT(*) AS order_count FROM orders GROUP BY day_type;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 296,
+    "sourceNumber": 264,
+    "question": "Find the percentage of orders with discounts per month.",
+    "solution": "SELECT DATE_TRUNC('month', order_date) AS month, 100.0 * SUM(CASE WHEN discount > 0 THEN 1 ELSE 0 END) / COUNT(*) AS discount_percentage FROM orders GROUP BY month ORDER BY month;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 297,
+    "sourceNumber": 265,
+    "question": "Find the employees who have never been late to work.",
+    "solution": "SELECT e.id, e.name FROM employees e",
+    "category": "SQL Fundamentals",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 298,
+    "sourceNumber": 266,
+    "question": "Find products with sales only during holiday seasons.",
+    "solution": "SELECT product_id FROM sales s JOIN holidays h ON s.sale_date = h.holiday_date GROUP BY product_id HAVING COUNT(*) = (SELECT COUNT(*) FROM sales WHERE product_id = s.product_id);",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 299,
+    "sourceNumber": 267,
+    "question": "Find the department with the largest increase in employee count compared to last year.",
+    "solution": "WITH current_year AS ( SELECT department_id, COUNT(*) AS emp_count FROM employees WHERE hire_date <= CURRENT_DATE AND (termination_date IS NULL OR termination_date >= CURRENT_DATE) GROUP BY department_id ), last_year AS ( SELECT department_id, COUNT(*) AS emp_count FROM employees WHERE hire_date <= CURRENT_DATE INTERVAL '1 year' AND (termination_date IS NULL OR termination_date >= CURRENT_DATE INTERVAL '1 year') GROUP BY department_id ) SELECT c.department_id, c.emp_count COALESCE(l.emp_count,0) AS increase FROM current_year c LEFT JOIN last_year l ON c.department_id = l.department_id ORDER BY increase DESC LIMIT 1;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 300,
+    "sourceNumber": 268,
+    "question": "Find the average order value per customer segment.",
+    "solution": "SELECT segment, AVG(o.amount) AS avg_order_value FROM customers c JOIN orders o ON c.customer_id = o.customer_id GROUP BY segment;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 301,
+    "sourceNumber": 269,
+    "question": "Find employees who manage more than 3 projects.",
+    "solution": "SELECT manager_id, COUNT(DISTINCT project_id) AS project_count FROM projects GROUP BY manager_id HAVING COUNT(DISTINCT project_id) > 3;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 302,
+    "sourceNumber": 270,
+    "question": "Find products that have never been returned.",
+    "solution": "SELECT p.product_id FROM products p LEFT JOIN returns r ON p.product_id = r.product_id WHERE r.return_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 303,
+    "sourceNumber": 271,
+    "question": "Find customers with orders but no shipments.",
+    "solution": "SELECT DISTINCT o.customer_id FROM orders o LEFT JOIN shipments s ON o.order_id = s.order_id WHERE s.shipment_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 304,
+    "sourceNumber": 272,
+    "question": "Find employees whose salaries increased every year.",
+    "solution": "WITH salary_diff AS ( SELECT employee_id, year, salary, LAG(salary) OVER (PARTITION BY employee_id ORDER BY year) AS prev_salary FROM salaries ) SELECT DISTINCT employee_id FROM salary_diff WHERE salary > prev_salary OR prev_salary IS NULL GROUP BY employee_id HAVING COUNT(*) = (SELECT COUNT(*) FROM salaries s2 WHERE s2.employee_id =",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 305,
+    "sourceNumber": 273,
+    "question": "Find the total number of unique products sold in the last quarter.",
+    "solution": "SELECT COUNT(DISTINCT product_id) AS unique_products_sold FROM sales WHERE sale_date >= DATE_TRUNC('quarter', CURRENT_DATE) - INTERVAL '3 months' AND sale_date < DATE_TRUNC('quarter', CURRENT_DATE);",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 306,
+    "sourceNumber": 274,
+    "question": "Find the day with the highest sales in each month.",
+    "solution": "WITH daily_sales AS ( SELECT DATE(order_date) AS day, SUM(amount) AS total_sales FROM orders GROUP BY day ), ranked_sales AS ( SELECT day, total_sales, RANK() OVER (PARTITION BY DATE_TRUNC('month', day) ORDER BY total_sales DESC) AS sales_rank FROM daily_sales ) SELECT day, total_sales FROM ranked_sales WHERE sales_rank = 1;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 307,
+    "sourceNumber": 275,
+    "question": "Find the products with the highest sales increase compared to the previous month.",
+    "solution": "WITH monthly_sales AS ( SELECT product_id, DATE_TRUNC('month', sale_date) AS month, SUM(amount) AS total_sales FROM sales GROUP BY product_id, month ), sales_diff AS ( SELECT product_id, month, total_sales, LAG(total_sales) OVER (PARTITION BY product_id ORDER BY month) AS prev_month_sales FROM monthly_sales ) SELECT product_id, month, total_sales prev_month_sales AS increase FROM sales_diff WHERE prev_month_sales IS NOT NULL ORDER BY increase DESC LIMIT 10;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 308,
+    "sourceNumber": 276,
+    "question": "Find the top 5 customers by total order value in the last year.",
+    "solution": "SELECT customer_id, SUM(amount) AS total_order_value FROM orders WHERE order_date >= CURRENT_DATE INTERVAL '1 year' GROUP BY customer_id ORDER BY total_order_value DESC LIMIT 5;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 309,
+    "sourceNumber": 277,
+    "question": "Find the number of employees who changed departments in the last year.",
+    "solution": "SELECT COUNT(DISTINCT employee_id) FROM employee_department_history WHERE change_date >= CURRENT_DATE INTERVAL '1 year';",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 310,
+    "sourceNumber": 278,
+    "question": "Find the average salary for each job title within each department.",
+    "solution": "SELECT department_id, job_title, AVG(salary) AS avg_salary FROM employees GROUP BY department_id, job_title;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 311,
+    "sourceNumber": 279,
+    "question": "Find customers who placed orders with multiple payment methods.",
+    "solution": "SELECT customer_id FROM orders GROUP BY customer_id HAVING COUNT(DISTINCT payment_method) > 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 312,
+    "sourceNumber": 280,
+    "question": "Find products with the lowest average rating per category.",
+    "solution": "SELECT category_id, product_id, AVG(rating) AS",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 313,
+    "sourceNumber": 281,
+    "question": "Find employees who have never received a promotion.",
+    "solution": "SELECT e.id, e.name FROM employees e LEFT JOIN promotions p ON e.id = p.employee_id WHERE p.promotion_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 314,
+    "sourceNumber": 282,
+    "question": "Find the total number of orders placed each day in the last week.",
+    "solution": "SELECT DATE(order_date) AS order_day, COUNT(*) AS orders_count FROM orders WHERE order_date >= CURRENT_DATE INTERVAL '7 days' GROUP BY order_day ORDER BY order_day;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 315,
+    "sourceNumber": 283,
+    "question": "Find customers with orders in both online and instore channels.",
+    "solution": "SELECT customer_id FROM orders GROUP BY customer_id HAVING COUNT(DISTINCT order_channel) > 1;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 316,
+    "sourceNumber": 284,
+    "question": "Find the top 3 sales reps by number of deals closed this quarter.",
+    "solution": "SELECT sales_rep_id, COUNT(*) AS deals_closed FROM sales_deals WHERE deal_close_date >= DATE_TRUNC('quarter', CURRENT_DATE) GROUP BY sales_rep_id ORDER BY deals_closed DESC LIMIT 3;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 317,
+    "sourceNumber": 285,
+    "question": "Find products that have been discontinued but still have sales.",
+    "solution": "SELECT p.product_id FROM products p JOIN sales s ON p.product_id = s.product_id WHERE p.discontinued = TRUE;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 318,
+    "sourceNumber": 286,
+    "question": "Find employees who report to a manager hired after them.",
+    "solution": "SELECT e.id, e.name, m.id AS manager_id, m.name AS manager_name FROM employees e JOIN employees m ON e.manager_id = m.id WHERE e.hire_date < m.hire_date;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 319,
+    "sourceNumber": 287,
+    "question": "Find the average delivery time by shipping method.",
+    "solution": "SELECT shipping_method, AVG(delivery_date order_date) AS avg_delivery_time FROM shipments GROUP BY shipping_method;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 320,
+    "sourceNumber": 288,
+    "question": "Find orders where the total quantity exceeds 100.",
+    "solution": "SELECT order_id, SUM(quantity) AS total_quantity FROM order_items GROUP BY order_id HAVING SUM(quantity) > 100;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 321,
+    "sourceNumber": 289,
+    "question": "Find customers who made orders but never returned a product.",
+    "solution": "SELECT DISTINCT o.customer_id FROM orders o LEFT JOIN returns r ON o.order_id = r.order_id WHERE r.return_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 322,
+    "sourceNumber": 290,
+    "question": "Find products that have been ordered but never reviewed.",
+    "solution": "SELECT p.product_id FROM products p LEFT JOIN product_reviews pr ON p.product_id = pr.product_id JOIN sales s ON p.product_id = s.product_id WHERE pr.review_id IS NULL GROUP BY p.product_id;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 323,
+    "sourceNumber": 291,
+    "question": "Find employees who have worked on projects for more than 2 years.",
+    "solution": "SELECT employee_id FROM project_assignments GROUP BY employee_id HAVING MAX(assignment_end_date) MIN(assignment_start_date) > INTERVAL '2 years';",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 324,
+    "sourceNumber": 292,
+    "question": "Find the product with the highest sales for each month.",
+    "solution": "WITH monthly_sales AS ( SELECT product_id, DATE_TRUNC('month', sale_date) AS month, SUM(amount) AS total_sales FROM sales GROUP BY product_id, month ), ranked_sales AS ( SELECT product_id, month, total_sales, ROW_NUMBER() OVER (PARTITION BY month ORDER BY total_sales DESC) AS rn FROM monthly_sales ) SELECT product_id, month, total_sales FROM ranked_sales WHERE rn = 1;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 325,
+    "sourceNumber": 293,
+    "question": "Find customers with the highest order count in each region.",
+    "solution": "WITH customer_order_counts AS ( SELECT c.region, o.customer_id, COUNT(*) AS order_count, ROW_NUMBER() OVER (PARTITION BY c.region ORDER BY COUNT(*) DESC) AS rn FROM customers c JOIN orders o",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 326,
+    "sourceNumber": 294,
+    "question": "Flag customers with an increase in orders every month this year.",
+    "solution": "WITH monthly_counts AS ( SELECT customer_id, DATE_TRUNC('month', order_date) AS month, COUNT(*) AS cnt FROM orders WHERE EXTRACT(YEAR FROM order_date) = EXTRACT(YEAR FROM CURRENT_DATE) GROUP BY customer_id, month ), increase_check AS ( SELECT customer_id, LAG(cnt) OVER (PARTITION BY customer_id ORDER BY month) AS prev_cnt, cnt FROM monthly_counts ) SELECT DISTINCT customer_id FROM increase_check WHERE cnt > prev_cnt AND prev_cnt IS NOT NULL;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 327,
+    "sourceNumber": 295,
+    "question": "Find employees whose hire date is the same weekday as their manager's.",
+    "solution": "SELECT e.id, e.name FROM employees e JOIN employees m ON e.manager_id = m.id WHERE EXTRACT(DOW FROM e.hire_date) = EXTRACT(DOW FROM m.hire_date);",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 328,
+    "sourceNumber": 296,
+    "question": "Get total working hours per employee per week.",
+    "solution": "SELECT employee_id, DATE_TRUNC('week', work_date) AS week_start, SUM(hours_worked) AS total_hours FROM work_logs GROUP BY employee_id, week_start;",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 329,
+    "sourceNumber": 297,
+    "question": "Identify suppliers who delivered to all regions.",
+    "solution": "WITH total_regions AS ( SELECT COUNT(DISTINCT region) AS total FROM suppliers ), supplier_regions AS ( SELECT supplier_id, COUNT(DISTINCT delivery_region) AS regions_served FROM deliveries GROUP BY supplier_id",
+    "category": "Aggregations",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 330,
+    "sourceNumber": 298,
+    "question": "Find products ordered on their launch date.",
+    "solution": "SELECT o.product_id FROM orders o JOIN products p ON o.product_id = p.product_id WHERE CAST(o.order_date AS DATE) = p.launch_date;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 331,
+    "sourceNumber": 299,
+    "question": "Retrieve employees with salary in top 5% company-wide.",
+    "solution": "WITH salary_ranks AS ( SELECT salary, PERCENT_RANK() OVER (ORDER BY salary DESC) AS pr FROM employees ) SELECT e.* FROM employees e JOIN salary_ranks sr ON e.salary = sr.salary WHERE sr.pr <= 0.05;",
+    "category": "Window Functions",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 332,
+    "sourceNumber": 300,
+    "question": "List departments with no open positions.",
+    "solution": "SELECT d.department_id FROM departments d LEFT JOIN job_openings j ON d.department_id = j.department_id AND j.status = 'Open' WHERE j.job_id IS NULL;",
+    "category": "Joins & Relationships",
+    "difficulty": "Medium"
+  }
+]
