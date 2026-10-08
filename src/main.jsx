@@ -87,7 +87,7 @@ INSERT INTO deliveries VALUES (1,1,'North','2025-01-05'),(2,1,'West','2025-02-11
 
 function App(){
  const [db,setDb]=useState(null), [dbError,setDbError]=useState(''), [active,setActive]=useState(1), [code,setCode]=useState('SELECT *\nFROM employees\nLIMIT 10;'), [result,setResult]=useState(null), [done,setDone]=useState(()=>JSON.parse(localStorage.getItem('sql-done')||'[]')), [query,setQuery]=useState(''), [filter,setFilter]=useState('All questions'), [tab,setTab]=useState('results');
- useEffect(()=>{let live=true;(async()=>{try{const SQL=await initSqlJs({locateFile:f=>f.endsWith('.wasm')?'/sql-wasm.wasm':f});const d=new SQL.Database();d.run(schema);d.run(seed);d.run(extraSchema);d.run(extraSeed);if(live)setDb(d)}catch(e){setDbError(`Database startup failed: ${e.message}`)}})();return()=>{live=false}},[]);
+ useEffect(()=>{let live=true;(async()=>{try{const SQL=await initSqlJs({locateFile:f=>f.endsWith('.wasm')?`${import.meta.env.BASE_URL}sql-wasm.wasm`:f});const d=new SQL.Database();d.run(schema);d.run(seed);d.run(extraSchema);d.run(extraSeed);if(live)setDb(d)}catch(e){setDbError(`Database startup failed: ${e.message}`)}})();return()=>{live=false}},[]);
  const q=questions.find(x=>x.id===active)||questions[0];
  const categories=useMemo(()=>['All questions',...new Set(questions.map(x=>x.category))],[ ]);
  const visible=useMemo(()=>questions.filter(x=>(filter==='All questions'||x.category===filter)&&(!query||`${x.id} ${x.question}`.toLowerCase().includes(query.toLowerCase()))),[filter,query]);
